@@ -62,13 +62,16 @@ python -m pytest
 ```
 
 ## Repository structure
+
+```
 app/
-core/ configuration (data paths)
-main.py FastAPI app and routes
-tests/ pytest test suite
-docs/ project documentation, including PROVENANCE.md
+  core/          configuration (data paths)
+  main.py        FastAPI app and routes
+tests/           pytest test suite
+docs/            project documentation, including PROVENANCE.md
 requirements.txt
 pytest.ini
+```
 
 ## AI use
 
