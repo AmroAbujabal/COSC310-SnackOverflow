@@ -1,6 +1,6 @@
 # Team Agreement V1
 Part 1 — Team Information
-Team Name: SnackOverlow
+Team Name: SnackOverflow
 Team Members: Amro Ahmed 20750295, Al-Munther Bahanshal 52536976, Kenneth
 Tandianto 63800379.
 Lab Section: Tuesday
