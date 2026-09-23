@@ -29,3 +29,14 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated config module, tests, and README content.
 - Validation: Ran `python -m pytest` and all tests passed. Followed the README setup steps to confirm they work.
 - PR: #2
+
+## Entry 3
+
+- Student(s): Amr
+- Artifact: app/models/restaurant.py, app/repositories/restaurant_repository.py, tests/test_restaurant_repository.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Add the repository layer the architecture requires, so services stop reading files directly.
+- Influence: Used the generated repository, model, and tests. Shape (class taking Settings, Pydantic models, one file per entity) was decided by the team before implementation.
+- Validation: Ran `python -m pytest` and all 7 tests passed.
+- PR: 
