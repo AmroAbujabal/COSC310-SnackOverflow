@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "name": "Pretty Pizza",
+        "address": "294 Orchid Street"
+    },
+    {
+        "id": 2,
+        "name": "Big Bob's Burger",
+        "address": "456 Tulip Avenue"
+    },
+    {
+        "id": 3,
+        "name": "Swift Sushi",
+        "address": "789 Daisy Road"
+    }
+]
