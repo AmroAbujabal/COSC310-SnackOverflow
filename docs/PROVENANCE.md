@@ -42,3 +42,12 @@ Each team member adds their own entries in the same PR as the work they describe
 - PR: #5
 ---
 
+## Entry 2
+- Student(s): Kenneth Tandianto
+- Artifact: app/services/restaurant_services.py, app/routes/restaurants.py, tests/test_restaurants.py, app/main.py
+- Label: AI-GENERATED
+- AI tool: ChatGPT
+- Purpose: Setting up the restaurant service, get the /restaurant endpoint, and the second test.
+- Influence: Used the generated code.
+- Validation: Ran the app locally and checked for the /restaurant and /docs in the browser. Ran `python -m pytest -v`, and both the health and restaurant test passed.
+- PR: #3

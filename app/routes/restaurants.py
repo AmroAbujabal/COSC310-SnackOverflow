@@ -11,6 +11,7 @@ router = APIRouter()
 
 
 @router.get("/restaurants")
+
 def restaurants(
     repo: RestaurantRepository = Depends(get_restaurant_repository)
 ):
