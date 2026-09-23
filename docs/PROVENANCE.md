@@ -10,7 +10,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ## Entry 1
 
-- Student(s): Amr
+- Student(s): Amro
 - Artifact: requirements.txt, pytest.ini, app/main.py, tests/test_health.py
 - Label: AI-GENERATED
 - AI tool: Claude
@@ -21,7 +21,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ## Entry 2
 
-- Student(s): Amr
+- Student(s): Amro
 - Artifact: app/core/config.py, tests/test_config.py, README.md
 - Label: AI-GENERATED
 - AI tool: Claude
@@ -32,7 +32,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ## Entry 3
 
-- Student(s): Amr
+- Student(s): Amro
 - Artifact: app/models/restaurant.py, app/repositories/restaurant_repository.py, tests/test_restaurant_repository.py
 - Label: AI-GENERATED
 - AI tool: Claude
