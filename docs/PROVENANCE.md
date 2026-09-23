@@ -18,3 +18,14 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated setup and code as the project base.
 - Validation: Ran the app locally and checked /health and /docs in the browser. Ran `python -m pytest` and the health test passed.
 - PR: #1
+
+## Entry 2
+
+- Student(s): Amr
+- Artifact: app/core/config.py, tests/test_config.py, README.md
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Add configurable data path and write the full README.
+- Influence: Used the generated config module, tests, and README content.
+- Validation: Ran `python -m pytest` and all tests passed. Followed the README setup steps to confirm they work.
+- PR: #2
