@@ -1,0 +1,7 @@
+[
+    {"id": 1, "name": "Fine india dining", "cuisine": "Indian", "address": "453 Berndard Rd", "rating": 4.7},
+    {"id": 2, "name": "Nevada's BBQ", "cuisine": "American", "address": "178 Academy Dr", "rating": 4.9},
+    {"id": 3, "name": "Osaka's Sushi", "cuisine": "Japanese", "address": "890 Cherry Ln", "rating": 4.1}
+
+
+]

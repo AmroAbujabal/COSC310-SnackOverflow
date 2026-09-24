@@ -40,6 +40,18 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated repository, model, and tests. Shape (class taking Settings, Pydantic models, one file per entity) was decided by the team before implementation.
 - Validation: Ran `python -m pytest` and all 7 tests passed.
 - PR: #5
+
+
+## Entry 4
+- Student(s): Al-Munther
+- Artifact: data/restaurants.json
+- Label: AI-ASSISTED
+- AI tool: Claude
+- Purpose: Learn JSON syntax and the restaurant field layout for the data file.
+- Influence: Claude explained the JSON structure and gave one example line. I wrote all restaurant names, addresses, ratings, and values myself.
+- Validation: Checked the file is valid JSON and matches the agreed fields.
+- PR: #6
+
 ---
 
 ## Entry 2
