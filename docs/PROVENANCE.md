@@ -54,7 +54,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-## Entry 2
+## Entry 5
 - Student(s): Kenneth Tandianto
 - Artifact: app/services/restaurant_services.py, app/routes/restaurants.py, tests/test_restaurants.py, app/main.py
 - Label: AI-GENERATED
