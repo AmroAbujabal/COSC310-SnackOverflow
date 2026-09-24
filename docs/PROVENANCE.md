@@ -30,7 +30,7 @@ Each team member adds their own entries in the same PR as the work they describe
 - Validation: Ran `python -m pytest` and all tests passed. Followed the README setup steps to confirm they work.
 - PR: #2
 
-## Entry 3
+## Entry 4
 - Student(s): Al-Munther
 - Artifact: data/restaurants.json
 - Label: AI-ASSISTED
