@@ -2,7 +2,7 @@
 Part 1 — Team Information
 Team Name: SnackOverflow
 Team Members: Amro Ahmed 20750295, Al-Munther Bahanshal 52536976, Kenneth
-Tandianto 63800379.
+Tandianto 63800379, Manveer Sandhu 84488402.
 Lab Section: Tuesday
 
 
@@ -83,3 +83,4 @@ Signatures:
 Amro Ahmed (17 September 2026)
 Al-Munther Bahanshal (17th September 2026)
 Kenneth Tandianto (22 September 2026)
+Manveer Sandhu (23 September 2026)
