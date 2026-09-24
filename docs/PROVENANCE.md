@@ -10,7 +10,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ## Entry 1
 
-- Student(s): Amr
+- Student(s): Amro
 - Artifact: requirements.txt, pytest.ini, app/main.py, tests/test_health.py
 - Label: AI-GENERATED
 - AI tool: Claude
@@ -21,7 +21,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ## Entry 2
 
-- Student(s): Amr
+- Student(s): Amro
 - Artifact: app/core/config.py, tests/test_config.py, README.md
 - Label: AI-GENERATED
 - AI tool: Claude
@@ -29,6 +29,18 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated config module, tests, and README content.
 - Validation: Ran `python -m pytest` and all tests passed. Followed the README setup steps to confirm they work.
 - PR: #2
+
+## Entry 3
+
+- Student(s): Amro
+- Artifact: app/models/restaurant.py, app/repositories/restaurant_repository.py, tests/test_restaurant_repository.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Add the repository layer the architecture requires, so services stop reading files directly.
+- Influence: Used the generated repository, model, and tests. Shape (class taking Settings, Pydantic models, one file per entity) was decided by the team before implementation.
+- Validation: Ran `python -m pytest` and all 7 tests passed.
+- PR: #5
+
 
 ## Entry 4
 - Student(s): Al-Munther
@@ -39,3 +51,15 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Claude explained the JSON structure and gave one example line. I wrote all restaurant names, addresses, ratings, and values myself.
 - Validation: Checked the file is valid JSON and matches the agreed fields.
 - PR: #6
+
+---
+
+## Entry 2
+- Student(s): Kenneth Tandianto
+- Artifact: app/services/restaurant_services.py, app/routes/restaurants.py, tests/test_restaurants.py, app/main.py
+- Label: AI-GENERATED
+- AI tool: ChatGPT
+- Purpose: Setting up the restaurant service, get the /restaurant endpoint, and the second test.
+- Influence: Used the generated code.
+- Validation: Ran the app locally and checked for the /restaurant and /docs in the browser. Ran `python -m pytest -v`, and both the health and restaurant test passed.
+- PR: #3
