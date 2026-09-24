@@ -29,3 +29,13 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated config module, tests, and README content.
 - Validation: Ran `python -m pytest` and all tests passed. Followed the README setup steps to confirm they work.
 - PR: #2
+
+## Entry 3
+- Student(s): Al-Munther
+- Artifact: data/restaurants.json
+- Label: AI-ASSISTED
+- AI tool: Claude
+- Purpose: Learn JSON syntax and the restaurant field layout for the data file.
+- Influence: Claude explained the JSON structure and gave one example line. I wrote all restaurant names, addresses, ratings, and values myself.
+- Validation: Checked the file is valid JSON and matches the agreed fields.
+- PR: #6
