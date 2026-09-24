@@ -39,4 +39,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: Add the repository layer the architecture requires, so services stop reading files directly.
 - Influence: Used the generated repository, model, and tests. Shape (class taking Settings, Pydantic models, one file per entity) was decided by the team before implementation.
 - Validation: Ran `python -m pytest` and all 7 tests passed.
-- PR: 
+- PR: #5

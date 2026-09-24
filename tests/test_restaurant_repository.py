@@ -11,8 +11,8 @@ def repository(tmp_path):
     (tmp_path / "restaurants.json").write_text(
         json.dumps(
             [
-                {"id": 1, "name": "Pretty Pizza", "address": "294 Orchid Street"},
-                {"id": 2, "name": "Swift Sushi", "address": "789 Daisy Road"},
+                {"id": 1, "name": "Pretty Pizza", "cuisine": "Italian", "address": "294 Orchid Street", "rating": 4.5},
+                {"id": 2, "name": "Swift Sushi", "cuisine": "Japanese", "address": "789 Daisy Road", "rating": 4.2},
             ]
         ),
         encoding="utf-8",
