@@ -40,3 +40,14 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated repository, model, and tests. Shape (class taking Settings, Pydantic models, one file per entity) was decided by the team before implementation.
 - Validation: Ran `python -m pytest` and all 7 tests passed.
 - PR: #5
+---
+
+## Entry 2
+- Student(s): Kenneth Tandianto
+- Artifact: app/services/restaurant_services.py, app/routes/restaurants.py, tests/test_restaurants.py, app/main.py
+- Label: AI-GENERATED
+- AI tool: ChatGPT
+- Purpose: Setting up the restaurant service, get the /restaurant endpoint, and the second test.
+- Influence: Used the generated code.
+- Validation: Ran the app locally and checked for the /restaurant and /docs in the browser. Ran `python -m pytest -v`, and both the health and restaurant test passed.
+- PR: #3
