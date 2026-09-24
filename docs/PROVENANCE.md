@@ -73,4 +73,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: Declare the Restaurant model as the /restaurants response model and bring the README up to date for M0 (endpoints, data file, repository structure).
 - Influence: Used the generated change and README text.
 - Validation: Ran `python -m pytest` and all tests passed. Checked /restaurants and the Restaurant schema in /docs.
-- PR: 
+- PR: #7
