@@ -63,3 +63,15 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated code.
 - Validation: Ran the app locally and checked for the /restaurant and /docs in the browser. Ran `python -m pytest -v`, and both the health and restaurant test passed.
 - PR: #3
+
+---
+
+## Entry 6
+- Student(s): Amro
+- Artifact: app/services/exceptions.py, app/models/error.py, app/services/restaurant_services.py, app/routes/restaurants.py, app/main.py, tests/conftest.py, tests/test_restaurant_details.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Add the restaurant details endpoint and a shared 404 response for unknown restaurants.
+- Influence: Used the generated code and tests. The error design (the service raises a domain error and one handler in main.py maps it to a 404) was proposed by AI and is pending team confirmation.
+- Validation: Full test suite run with `python -m pytest` (13 passed). Ran the server and checked /restaurants/1 (200), /restaurants/99 (404), /restaurants/abc (422), and /docs.
+- PR: #10
