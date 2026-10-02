@@ -15,6 +15,7 @@ ALL = ["Pretty Pizza", "Swift Sushi"]
         ("?name=sushi&cuisine=Italian", []),
         ("?name=burger", []),
         ("?name=%20%20", ALL),
+        ("?cuisine=%20", ALL),
     ],
     ids=[
         "no filters",
@@ -26,6 +27,7 @@ ALL = ["Pretty Pizza", "Swift Sushi"]
         "combined with no match",
         "no match",
         "blank name ignored",
+        "blank cuisine ignored",
     ],
 )
 def test_search_and_filter(client, query, expected):
@@ -37,3 +39,4 @@ def test_search_and_filter(client, query, expected):
 def test_docs_list_the_search_params(client):
     params = client.get("/openapi.json").json()["paths"]["/restaurants"]["get"]["parameters"]
     assert {p["name"] for p in params} == {"name", "cuisine"}
+    assert all(p.get("description") for p in params)
