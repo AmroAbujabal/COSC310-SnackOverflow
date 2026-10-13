@@ -46,3 +46,11 @@ def test_get_restaurants(tmp_path):
     finally:
         app.dependency_overrides.clear()
 
+
+def test_get_restaurants_returns_empty_list_when_store_is_empty(client, data_dir):
+    (data_dir / "restaurants.json").write_text("[]", encoding="utf-8")
+
+    response = client.get("/restaurants")
+
+    assert response.status_code == 200
+    assert response.json() == []

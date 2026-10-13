@@ -115,4 +115,14 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Validation:** Ran `python -m pytest -v` with 19 tests passing. Tested the API using Swagger UI, including successful retrieval (200) and missing-menu handling (404).
 - **PR:** Pending
 
+---
 
+## Entry 10
+- Student(s): Amro
+- Artifact: tests/test_restaurants.py, docs/requirements.md
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Test that listing restaurants returns an empty list when the stored list is empty, and mark FR1 Finished in the traceability matrix.
+- Influence: Used the generated test, which reuses the shared `client` and `data_dir` fixtures from conftest.py.
+- Validation: Full test suite run with `python -m pytest` (14 passed). Confirmed the new test fails when the line that empties the file is removed.
+- PR: #13
