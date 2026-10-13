@@ -125,4 +125,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: Test that listing restaurants returns an empty list when the stored list is empty, and mark FR1 Finished in the traceability matrix.
 - Influence: Used the generated test, which reuses the shared `client` and `data_dir` fixtures from conftest.py.
 - Validation: Full test suite run with `python -m pytest` (14 passed). Confirmed the new test fails when the line that empties the file is removed.
-- PR: #13
+- PR: #29
