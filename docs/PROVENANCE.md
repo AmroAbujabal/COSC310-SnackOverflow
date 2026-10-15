@@ -66,7 +66,31 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-## Entry 7 — Menu Models
+## Entry 6
+- Student(s): Amro
+- Artifact: app/services/exceptions.py, app/models/error.py, app/services/restaurant_services.py, app/routes/restaurants.py, app/main.py, tests/conftest.py, tests/test_restaurant_details.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Add the restaurant details endpoint and a shared 404 response for unknown restaurants.
+- Influence: Used the generated code and tests. The error design (the service raises a domain error and one handler in main.py maps it to a 404) was proposed by AI and is pending team confirmation.
+- Validation: Full test suite run with `python -m pytest` (13 passed). Ran the server and checked /restaurants/1 (200), /restaurants/99 (404), /restaurants/abc (422), and /docs.
+- PR: #10
+
+---
+
+## Entry 7
+- Student(s): Amro
+- Artifact: app/services/restaurant_services.py, app/routes/restaurants.py, tests/test_restaurant_search.py (search/filter); .github/workflows/ci.yml; .github/ISSUE_TEMPLATE/epic.md, user_story.md, task.md; docs/requirements.md
+- Label: AI-GENERATED (docs/requirements.md is AI-REVISED: my draft, restructured by AI)
+- AI tool: Claude
+- Purpose: Add restaurant name search and cuisine filter, CI that runs pytest, the issue templates from Lecture 6, and the requirements document with a traceability matrix.
+- Influence: Used the generated code, tests, workflow and templates (epic.md copies the Lecture 6 slide). The requirements doc started from my M1 requirements draft; AI rewrote the stories to the lecture rules and built the traceability matrix. Search parameter names and exact cuisine matching are pending team confirmation.
+- Validation: Full test suite run with `python -m pytest` (24 passed on the search branch). Search checked on a running server. CI's first run on PR #24 passed (8 passed on Python 3.11). Template front matter checked.
+- PR: #27, #24, #25, #26
+ 
+ ---
+ 
+## Entry 8 — Menu Models
 
 - **Student(s):** Al-Munther Bahanshal
 - **Artifact:** `app/models/menu.py`, `app/models/menu_item.py`
@@ -78,7 +102,9 @@ Each team member adds their own entries in the same PR as the work they describe
 - **PR:** Pending
 
 
-## Entry 8 — Menu Backend
+---
+
+## Entry 9 — Menu Backend
 
 - **Student(s):** Al-Munther Bahanshal
 - **Artifact:** Menu Repository, Menu Service, Menu API routes, JSON data, relationship validation, and automated tests.
@@ -88,3 +114,5 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Influence:** Used AI-generated code and guidance for implementation, debugging, and testing. Made adjustments and verified functionality.
 - **Validation:** Ran `python -m pytest -v` with 19 tests passing. Tested the API using Swagger UI, including successful retrieval (200) and missing-menu handling (404).
 - **PR:** Pending
+
+
