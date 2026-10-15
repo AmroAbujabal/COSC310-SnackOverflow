@@ -48,6 +48,8 @@ The API runs at http://127.0.0.1:8000.
 | --- | --- | --- |
 | GET | `/health` | Health check, returns `{"status": "ok"}` |
 | GET | `/restaurants` | List all restaurants (id, name, cuisine, address, rating) |
+| GET | `/restaurants?name=&cuisine=` | Search by part of the name and/or filter by exact cuisine (both ignore case); no match returns `[]` |
+| GET | `/restaurants/{restaurant_id}` | One restaurant's details; `404` with `{"detail": ...}` if the id is unknown |
 | GET | `/docs` | Interactive OpenAPI documentation |
 
 ## Data
