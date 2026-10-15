@@ -63,3 +63,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated code.
 - Validation: Ran the app locally and checked for the /restaurant and /docs in the browser. Ran `python -m pytest -v`, and both the health and restaurant test passed.
 - PR: #3
+
+---
+
+## Entry 7 — Menu Models
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `app/models/menu.py`, `app/models/menu_item.py`
+- **Label:** AI-ASSISTED
+- **AI tool:** ChatGPT (OpenAI)
+- **Purpose:** Create the Menu and MenuItem Pydantic models.
+- **Influence:** Used ChatGPT to understand Pydantic, BaseModel, and how the two models should be structured. Used the official Pydantic documentation and ChatGPT suggestions to write and revise the code.
+- **Validation:** Model testing and PR review pending.
+- **PR:** Pending
