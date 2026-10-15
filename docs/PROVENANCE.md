@@ -74,5 +74,17 @@ Each team member adds their own entries in the same PR as the work they describe
 - **AI tool:** ChatGPT (OpenAI)
 - **Purpose:** Create the Menu and MenuItem Pydantic models.
 - **Influence:** Used ChatGPT to understand Pydantic, BaseModel, and how the two models should be structured. Used the official Pydantic documentation and ChatGPT suggestions to write and revise the code.
-- **Validation:** Model testing and PR review pending.
+- **Validation:**  Ran pytest successfully. All 19 tests passed. PR review pending.
+- **PR:** Pending
+
+
+## Entry 8 — Menu Backend
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** Menu Repository, Menu Service, Menu API routes, JSON data, relationship validation, and automated tests.
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT (OpenAI)
+- **Purpose:** Implement menu retrieval functionality following the route → service → repository → JSON architecture.
+- **Influence:** Used AI-generated code and guidance for implementation, debugging, and testing. Made adjustments and verified functionality.
+- **Validation:** Ran `python -m pytest -v` with 19 tests passing. Tested the API using Swagger UI, including successful retrieval (200) and missing-menu handling (404).
 - **PR:** Pending
