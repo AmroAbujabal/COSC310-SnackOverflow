@@ -1,0 +1,19 @@
+[
+  {
+    "restaurant_id": 1,
+    "items": [
+      {
+        "item_id": 1,
+        "restaurant_id": 1,
+        "name": "Butter Chicken",
+        "price": 15.99
+      },
+      {
+        "item_id": 2,
+        "restaurant_id": 1,
+        "name": "Chicken Biryani",
+        "price": 13.99
+      }
+    ]
+  }
+]

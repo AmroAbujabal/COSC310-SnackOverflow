@@ -13,6 +13,10 @@ class Settings:
     @property
     def restaurants_file(self) -> Path:
         return self.data_dir / "restaurants.json"
+    @property
+    def menus_file(self) -> Path:
+        return self.data_dir / "menus.json"
+
 
 
 def get_settings() -> Settings:

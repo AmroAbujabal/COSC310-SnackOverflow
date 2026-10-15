@@ -4,6 +4,8 @@ from fastapi.responses import JSONResponse
 from app.routes.restaurants import router as restaurant_router
 from app.services.exceptions import RestaurantNotFoundError
 
+from app.routes.menus import router as menu_router
+
 app = FastAPI(title="SnackOverflow API")
 
 
@@ -17,3 +19,4 @@ async def restaurant_not_found(request: Request, exc: RestaurantNotFoundError):
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 app.include_router(restaurant_router)
+app.include_router(menu_router)

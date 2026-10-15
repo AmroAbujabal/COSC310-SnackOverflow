@@ -87,3 +87,32 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated code, tests, workflow and templates (epic.md copies the Lecture 6 slide). The requirements doc started from my M1 requirements draft; AI rewrote the stories to the lecture rules and built the traceability matrix. Search parameter names and exact cuisine matching are pending team confirmation.
 - Validation: Full test suite run with `python -m pytest` (24 passed on the search branch). Search checked on a running server. CI's first run on PR #24 passed (8 passed on Python 3.11). Template front matter checked.
 - PR: #27, #24, #25, #26
+ 
+ ---
+ 
+## Entry 8 — Menu Models
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `app/models/menu.py`, `app/models/menu_item.py`
+- **Label:** AI-ASSISTED
+- **AI tool:** ChatGPT (OpenAI)
+- **Purpose:** Create the Menu and MenuItem Pydantic models.
+- **Influence:** Used ChatGPT to understand Pydantic, BaseModel, and how the two models should be structured. Used the official Pydantic documentation and ChatGPT suggestions to write and revise the code.
+- **Validation:**  Ran pytest successfully. All 19 tests passed. PR review pending.
+- **PR:** Pending
+
+
+---
+
+## Entry 9 — Menu Backend
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** Menu Repository, Menu Service, Menu API routes, JSON data, relationship validation, and automated tests.
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT (OpenAI)
+- **Purpose:** Implement menu retrieval functionality following the route → service → repository → JSON architecture.
+- **Influence:** Used AI-generated code and guidance for implementation, debugging, and testing. Made adjustments and verified functionality.
+- **Validation:** Ran `python -m pytest -v` with 19 tests passing. Tested the API using Swagger UI, including successful retrieval (200) and missing-menu handling (404).
+- **PR:** Pending
+
+
