@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, Query
 
 from app.models.error import ErrorResponse
 from app.models.restaurant import Restaurant
@@ -15,14 +15,19 @@ router = APIRouter()
 @router.get(
     "/restaurants",
     response_model=list[Restaurant],
-    summary="List restaurants",
-    description="Returns every restaurant in the data store.",
+    summary="List, search and filter restaurants",
+    description=(
+        "Returns every restaurant, optionally narrowed by a name search and a cuisine filter. "
+        "Both filters can be combined. No match returns an empty list."
+    ),
 )
 def restaurants(
-    repo: RestaurantRepository = Depends(get_restaurant_repository)
+    name: str | None = Query(None, description="Only restaurants whose name contains this text (case-insensitive)"),
+    cuisine: str | None = Query(None, description="Only restaurants with exactly this cuisine (case-insensitive)"),
+    repo: RestaurantRepository = Depends(get_restaurant_repository),
 ):
     service = RestaurantService(repo)
-    return service.list_restaurants()
+    return service.list_restaurants(name=name, cuisine=cuisine)
 
 
 @router.get(
