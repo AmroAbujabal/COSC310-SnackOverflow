@@ -101,7 +101,6 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Validation:**  Ran pytest successfully. All 19 tests passed. PR review pending.
 - **PR:** Pending
 
-
 ---
 
 ## Entry 9 — Menu Backend
@@ -113,6 +112,19 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Purpose:** Implement menu retrieval functionality following the route → service → repository → JSON architecture.
 - **Influence:** Used AI-generated code and guidance for implementation, debugging, and testing. Made adjustments and verified functionality.
 - **Validation:** Ran `python -m pytest -v` with 19 tests passing. Tested the API using Swagger UI, including successful retrieval (200) and missing-menu handling (404).
+- **PR:** Pending
+
+---
+
+## Entry 10 — Text-Only Restaurant Frontend
+
+- **Student(s):** Manveer Sandhu
+- **Artifact:** `app/main.py`, `app/frontend/index.html`, `app/frontend/app.js`, `tests/test_frontend.py`
+- **Label:** AI-GENERATED
+- **AI tool:** GitHub Copilot
+- **Purpose:** Add a plain-text restaurant list with search across restaurant information and menu viewing.
+- **Influence:** Used AI-generated implementation and revised it to match the requested text-only design.
+- **Validation:** Checked text search and menu display in the browser. Ran `python -m pytest -q`; all 36 tests passed.
 - **PR:** Pending
 
 
