@@ -51,6 +51,10 @@ The API runs at http://127.0.0.1:8000.
 | GET | `/restaurants?name=&cuisine=` | Search by part of the name and/or filter by exact cuisine (both ignore case); no match returns `[]` |
 | GET | `/restaurants/{restaurant_id}` | One restaurant's details; `404` with `{"detail": ...}` if the id is unknown |
 | GET | `/docs` | Interactive OpenAPI documentation |
+| POST | `/restaurants` | Create a restaurant |
+| PATCH | `/restaurants/{restaurant_id}` | Update a restaurant |
+| POST | `/restaurants/{restaurant_id}/menu/items` | Add a menu item |
+| PATCH | `/restaurants/{restaurant_id}/menu/items/{item_id}` | Update a menu item |
 
 ## Data
 

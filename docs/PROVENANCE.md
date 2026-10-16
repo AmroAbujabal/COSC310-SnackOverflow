@@ -141,12 +141,12 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-# Entry 12
+## Entry 12
 - Student(s): Kenneth Tandianto
-- Artifact:  app/models/restaurant_requests.py, app/models/menu_item_requests.py, app/repositories/menu_repository.py, app/repositories/restaurant_repository.py, app/routes/menus.py, app/routes/restaurants.py, app/services/menu_services.py, app/services/restaurant_services.py, tests/test_menu_writes.py, tests/test_restaurant_menu.py
+- Artifact: app/models/restaurant_requests.py, app/models/menu_item_requests.py, app/repositories/menu_repository.py, app/repositories/restaurant_repository.py, app/routes/menus.py, app/routes/restaurants.py, app/services/menu_services.py, app/services/restaurant_services.py, tests/test_menu_writes.py, tests/test_restaurant_writes.py
 - Label: AI-GENERATED
 - AI tool: ChatGPT
-- Purpose: Setting up app/models/restaurant_requests.py and app/models/menu_item_requests.py to allow creating & updating restaurants, as well as adding & updating menu items. Also tested for restart persistence, and added tests for create & update failure cases.
+- Purpose: Set up request models and implement restaurant and menu-item creation and updating, JSON persistence, stable IDs, and failure-case tests.
 - Influence: Used the generated code and modified it.
-- Validation: Ran `python -m pytest -v` with 53 tests passing. Tested the API using Swagger UI.
+- Validation: Ran `python -m pytest -v`; 55 tests passed after merging with main. Tested the API using Swagger UI.
 - PR: #34

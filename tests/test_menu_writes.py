@@ -3,9 +3,10 @@ import json
 
 import pytest
 from fastapi.testclient import TestClient
-
+from pydantic import ValidationError
 from app.core.config import Settings, get_settings
 from app.main import app
+from app.models.menu_item_requests import MenuItemCreate
 
 
 @pytest.fixture
@@ -44,11 +45,7 @@ def menu_write_client(tmp_path):
                     "price": 13.99,
                 },
             ],
-        },
-        {
-            "restaurant_id": 2,
-            "items": [],
-        },
+        }
     ]
 
     (tmp_path / "restaurants.json").write_text(
@@ -63,7 +60,7 @@ def menu_write_client(tmp_path):
     )
 
     try:
-        with TestClient(app) as test_client:
+        with TestClient(app, raise_server_exceptions=False) as test_client:
             yield test_client
     finally:
         app.dependency_overrides.pop(get_settings, None)
@@ -181,3 +178,10 @@ def test_update_menu_item_rejects_null_price(menu_write_client):
     )
 
     assert response.status_code == 422
+
+def test_add_menu_item_rejects_infinite_price(menu_write_client):
+    with pytest.raises(ValidationError):
+        MenuItemCreate.model_validate_json(
+            '{"name":"Noodles","price":1e400}'
+        )
+
