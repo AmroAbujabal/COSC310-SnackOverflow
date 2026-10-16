@@ -129,7 +129,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-## Entry 11
+**## Entry 11**
 - Student(s): Amro
 - Artifact: docs/decision-receipt-404.md, docs/requirements.md, README.md
 - Label: AI-ASSISTED
@@ -138,3 +138,15 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: AI drafted the receipt from the existing code and tests, and updated matrix statuses to match merged PRs #10, #24, #28 and #29. The receipt is marked Proposed until the team confirms it.
 - Validation: Checked every file and test name in the receipt exists. Full test suite run with `python -m pytest` (25 passed after rebasing on main).
 - PR: #29
+
+---
+
+**## Entry 12**
+- Student(s): Kenneth Tandianto
+- Artifact: app/models/restaurant_requests.py, app/models/menu_item_requests.py, app/repositories/menu_repository.py, app/repositories/restaurant_repository.py, app/routes/menus.py, app/routes/restaurants.py, app/services/menu_services.py, app/services/restaurant_services.py, tests/test_menu_writes.py, tests/test_restaurant_writes.py
+- Label: AI-GENERATED
+- AI tool: ChatGPT
+- Purpose: Set up request models and implement restaurant and menu-item creation and updating, JSON persistence, stable IDs, and failure-case tests.
+- Influence: Used the generated code and modified it.
+- Validation: Ran `python -m pytest -v`; 55 tests passed after merging with main. Tested the API using Swagger UI.
+- PR: #34
