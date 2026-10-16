@@ -1,7 +1,7 @@
  Sprint Planning 1
 ## Sprint Information
 - **Sprint / Milestone:** <!-- Milestone 1 -->
-- **Sprint dates:** <!-- 2026-10-02 - 2006-10-16 -->
+- **Sprint dates:** <!-- 2026-10-02 - 2026-10-16 -->
 - **Planning meeting date:** <!-- 2026-10-02 -->
 - **Facilitator:** <!-- Manveer Sandhu -->
 ### Team Members
