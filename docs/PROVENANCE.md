@@ -115,4 +115,26 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Validation:** Ran `python -m pytest -v` with 19 tests passing. Tested the API using Swagger UI, including successful retrieval (200) and missing-menu handling (404).
 - **PR:** Pending
 
+---
 
+## Entry 10
+- Student(s): Amro
+- Artifact: tests/test_restaurants.py, docs/requirements.md
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Test that listing restaurants returns an empty list when the stored list is empty, and mark FR1 Finished in the traceability matrix.
+- Influence: Used the generated test, which reuses the shared `client` and `data_dir` fixtures from conftest.py.
+- Validation: Full test suite run with `python -m pytest` (14 passed before rebasing; 25 after). Confirmed the new test fails when the line that empties the file is removed.
+- PR: #29
+
+---
+
+## Entry 11
+- Student(s): Amro
+- Artifact: docs/decision-receipt-404.md, docs/requirements.md, README.md
+- Label: AI-ASSISTED
+- AI tool: Claude
+- Purpose: Record the shared "not found" error design as a Decision Receipt, bring the traceability matrix up to date with merged PRs, and list the search and details endpoints in the README.
+- Influence: AI drafted the receipt from the existing code and tests, and updated matrix statuses to match merged PRs #10, #24, #28 and #29. The receipt is marked Proposed until the team confirms it.
+- Validation: Checked every file and test name in the receipt exists. Full test suite run with `python -m pytest` (25 passed after rebasing on main).
+- PR: #29
