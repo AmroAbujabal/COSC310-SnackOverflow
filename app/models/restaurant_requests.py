@@ -3,6 +3,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 
 class RestaurantCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=1)
     cuisine: str = Field(min_length=1)
     address: str = Field(min_length=1)

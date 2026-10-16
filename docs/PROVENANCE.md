@@ -129,7 +129,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-## Entry 11
+**## Entry 11**
 - Student(s): Amro
 - Artifact: docs/decision-receipt-404.md, docs/requirements.md, README.md
 - Label: AI-ASSISTED
@@ -141,7 +141,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-## Entry 12
+**## Entry 12**
 - Student(s): Kenneth Tandianto
 - Artifact: app/models/restaurant_requests.py, app/models/menu_item_requests.py, app/repositories/menu_repository.py, app/repositories/restaurant_repository.py, app/routes/menus.py, app/routes/restaurants.py, app/services/menu_services.py, app/services/restaurant_services.py, tests/test_menu_writes.py, tests/test_restaurant_writes.py
 - Label: AI-GENERATED
