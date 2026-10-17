@@ -41,6 +41,7 @@ uvicorn app.main:app --reload
 ```
 
 The API runs at http://127.0.0.1:8000.
+The restaurant browsing page is at http://127.0.0.1:8000/ and the management front end is at http://127.0.0.1:8000/management.
 
 ## API endpoints
 
@@ -55,6 +56,8 @@ The API runs at http://127.0.0.1:8000.
 | PATCH | `/restaurants/{restaurant_id}` | Update a restaurant |
 | POST | `/restaurants/{restaurant_id}/menu/items` | Add a menu item |
 | PATCH | `/restaurants/{restaurant_id}/menu/items/{item_id}` | Update a menu item |
+
+The management front end can create and edit restaurants and create and edit their menu items using these API endpoints.
 
 ## Data
 
