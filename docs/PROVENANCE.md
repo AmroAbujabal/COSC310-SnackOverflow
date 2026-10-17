@@ -166,3 +166,14 @@ Each team member adds their own entries in the same PR as the work they describe
 - **PR:** #33
 
 ---
+
+## Entry 14 — Management Front End
+
+- **Student(s):** Manveer Sandhu
+- **Artifact:** `app/main.py`, `app/frontend/index.html`, `app/frontend/management.html`, `app/frontend/management.js`, `tests/test_frontend.py`, `README.md`
+- **Label:** AI-GENERATED
+- **AI tool:** GitHub Copilot
+- **Purpose:** Add a management front end to create and edit restaurants and create and edit menu items using the existing API endpoints.
+- **Influence:** Used AI-generated page, JavaScript, route, navigation, documentation, and test changes. The page calls the existing restaurant and menu endpoints and handles restaurants that do not have a menu yet.
+- **Validation:** Ran `python -m pytest -q` (57 passed). Opened `/management` in the browser and verified the restaurant list and an existing restaurant's menu load.
+- **PR:** Pending
