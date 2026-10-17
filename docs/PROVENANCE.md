@@ -101,7 +101,6 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Validation:**  Ran pytest successfully. All 19 tests passed. PR review pending.
 - **PR:** Pending
 
-
 ---
 
 ## Entry 9 — Menu Backend
@@ -116,6 +115,7 @@ Each team member adds their own entries in the same PR as the work they describe
 - **PR:** Pending
 
 ---
+
 
 ## Entry 10
 - Student(s): Amro
@@ -141,6 +141,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
+
 **## Entry 12**
 - Student(s): Kenneth Tandianto
 - Artifact: app/models/restaurant_requests.py, app/models/menu_item_requests.py, app/repositories/menu_repository.py, app/repositories/restaurant_repository.py, app/routes/menus.py, app/routes/restaurants.py, app/services/menu_services.py, app/services/restaurant_services.py, tests/test_menu_writes.py, tests/test_restaurant_writes.py
@@ -150,3 +151,18 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated code and modified it.
 - Validation: Ran `python -m pytest -v`; 55 tests passed after merging with main. Tested the API using Swagger UI.
 - PR: #34
+
+
+--
+## Entry 13 — Text-Only Restaurant Frontend
+
+- **Student(s):** Manveer Sandhu
+- **Artifact:** `app/main.py`, `app/frontend/index.html`, `app/frontend/app.js`, `tests/test_frontend.py`
+- **Label:** AI-GENERATED
+- **AI tool:** GitHub Copilot
+- **Purpose:** Add a plain-text restaurant list with search across restaurant information and menu viewing.
+- **Influence:** Used AI-generated implementation and revised it to match the requested text-only design.
+- **Validation:** Checked text search and menu display in the browser. Ran `python -m pytest -q`; all 36 tests passed.
+- **PR:** #33
+
+---
