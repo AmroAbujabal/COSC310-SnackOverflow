@@ -129,7 +129,7 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-## Entry 11
+**## Entry 11**
 - Student(s): Amro
 - Artifact: docs/decision-receipt-404.md, docs/requirements.md, README.md
 - Label: AI-ASSISTED
@@ -141,7 +141,20 @@ Each team member adds their own entries in the same PR as the work they describe
 
 ---
 
-## Entry 12 — Text-Only Restaurant Frontend
+
+**## Entry 12**
+- Student(s): Kenneth Tandianto
+- Artifact: app/models/restaurant_requests.py, app/models/menu_item_requests.py, app/repositories/menu_repository.py, app/repositories/restaurant_repository.py, app/routes/menus.py, app/routes/restaurants.py, app/services/menu_services.py, app/services/restaurant_services.py, tests/test_menu_writes.py, tests/test_restaurant_writes.py
+- Label: AI-GENERATED
+- AI tool: ChatGPT
+- Purpose: Set up request models and implement restaurant and menu-item creation and updating, JSON persistence, stable IDs, and failure-case tests.
+- Influence: Used the generated code and modified it.
+- Validation: Ran `python -m pytest -v`; 55 tests passed after merging with main. Tested the API using Swagger UI.
+- PR: #34
+
+
+--
+## Entry 13 — Text-Only Restaurant Frontend
 
 - **Student(s):** Manveer Sandhu
 - **Artifact:** `app/main.py`, `app/frontend/index.html`, `app/frontend/app.js`, `tests/test_frontend.py`
