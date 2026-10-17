@@ -163,6 +163,6 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Purpose:** Add a plain-text restaurant list with search across restaurant information and menu viewing.
 - **Influence:** Used AI-generated implementation and revised it to match the requested text-only design.
 - **Validation:** Checked text search and menu display in the browser. Ran `python -m pytest -q`; all 36 tests passed.
-- **PR:** Pending
+- **PR:** #33
 
 ---
