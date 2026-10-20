@@ -20,7 +20,7 @@ class MenuService:
 
     def get_menu(self, restaurant_id: int) -> Menu | None:
         if self._restaurant_repo.get(restaurant_id) is None:
-            return None
+            raise RestaurantNotFoundError(restaurant_id)
 
         return self._repo.get(restaurant_id)
 

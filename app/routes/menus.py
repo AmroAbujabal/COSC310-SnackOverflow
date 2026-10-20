@@ -28,7 +28,7 @@ def build_service(
 @router.get(
     "/restaurants/{restaurant_id}/menu",
     response_model=Menu,
-    responses={404: {"description": "Menu not found"}},
+    responses={404: {"description": "Restaurant or menu not found"}},
 )
 def get_menu(
     restaurant_id: int,
@@ -49,7 +49,7 @@ def get_menu(
 @router.get(
     "/restaurants/{restaurant_id}/menu/items",
     response_model=list[MenuItem],
-    responses={404: {"description": "Menu not found"}},
+    responses={404: {"description": "Restaurant or menu not found"}},
 )
 def get_menu_items(
     restaurant_id: int,

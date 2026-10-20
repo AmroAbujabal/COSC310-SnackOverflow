@@ -81,6 +81,7 @@ def test_get_menu_not_found(client):
     response = client.get("/restaurants/999/menu")
 
     assert response.status_code == 404
+    assert response.json() == {"detail": "Restaurant 999 not found"}
 
 
 def test_get_menu_items_success(client):
@@ -95,6 +96,7 @@ def test_get_menu_items_not_found(client):
     response = client.get("/restaurants/999/menu/items")
 
     assert response.status_code == 404
+    assert response.json() == {"detail": "Restaurant 999 not found"}
 
 def test_menu_requires_existing_restaurant(client, tmp_path):
     (tmp_path / "restaurants.json").write_text(
