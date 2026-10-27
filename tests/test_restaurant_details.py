@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from app.core.config import Settings
@@ -38,3 +40,21 @@ def test_service_raises_for_unknown_restaurant(data_dir):
     service = RestaurantService(RestaurantRepository(Settings(data_dir=data_dir)))
     with pytest.raises(RestaurantNotFoundError):
         service.get_restaurant(99)
+
+
+@pytest.fixture
+def empty_data_dir(tmp_path_factory):
+    path = tmp_path_factory.mktemp("empty_data")
+    (path / "restaurants.json").write_text(json.dumps([]), encoding="utf-8")
+    return path
+
+
+def test_service_raises_when_repo_has_no_restaurants(empty_data_dir):
+    service = RestaurantService(RestaurantRepository(Settings(data_dir=empty_data_dir)))
+    with pytest.raises(RestaurantNotFoundError):
+        service.get_restaurant(1)
+
+
+def test_empty_repo_lists_no_restaurants(empty_data_dir):
+    service = RestaurantService(RestaurantRepository(Settings(data_dir=empty_data_dir)))
+    assert service.list_restaurants() == []
