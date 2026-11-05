@@ -54,6 +54,8 @@ The restaurant browsing page is at http://127.0.0.1:8000/ and the management fro
 | GET | `/docs` | Interactive OpenAPI documentation |
 | POST | `/restaurants` | Create a restaurant |
 | PATCH | `/restaurants/{restaurant_id}` | Update a restaurant |
+| GET | `/restaurants/{restaurant_id}/menu` | A restaurant's menu; `404` if the restaurant is unknown or has no menu |
+| GET | `/restaurants/{restaurant_id}/menu/items` | The items on a restaurant's menu; same `404`s as above |
 | POST | `/restaurants/{restaurant_id}/menu/items` | Add a menu item |
 | PATCH | `/restaurants/{restaurant_id}/menu/items/{item_id}` | Update a menu item |
 
