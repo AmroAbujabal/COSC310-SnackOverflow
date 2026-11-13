@@ -7,7 +7,7 @@ from argon2.exceptions import (
 )
 from datetime import datetime, timedelta, timezone
 import jwt
-from app.core.config import get_settings
+from app.core.config import Settings
 
 password_hasher = PasswordHasher()
 
@@ -30,9 +30,10 @@ def verify_password(
     except (VerifyMismatchError, VerificationError, InvalidHashError):
         return False
 
-def create_access_token(customer_id: int) -> str:
-    settings = get_settings()
-
+def create_access_token(
+    customer_id: int,
+    settings: Settings,
+) -> str:
     expires_at = datetime.now(timezone.utc) + timedelta(
         minutes=settings.access_token_expire_minutes
     )
@@ -49,9 +50,10 @@ def create_access_token(customer_id: int) -> str:
     )
 
 
-def decode_access_token(token: str) -> int | None:
-    settings = get_settings()
-
+def decode_access_token(
+    token: str,
+    settings: Settings,
+) -> int | None:
     try:
         payload = jwt.decode(
             token,
@@ -68,3 +70,4 @@ def decode_access_token(token: str) -> int | None:
 
     except jwt.InvalidTokenError:
         return None
+    
