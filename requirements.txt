@@ -2,3 +2,6 @@ fastapi
 uvicorn[standard]
 pytest
 httpx
+argon2-cffi
+PyJWT
+python-multipart
