@@ -189,4 +189,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: Replace the per-error exception handlers with one DomainError handler that maps NotFoundError to 404, BusinessRuleError to 409 and ForbiddenError to 403, and move the missing-menu 404 from the routes into the service as MenuNotFoundError.
 - Influence: Used the generated hierarchy, handler, service change and tests. Wrote the tests first and confirmed they failed before adding the code. Reviewed each change line by line so I can explain it.
 - Validation: Ran `python -m pytest -q` (76 passed). Checked that the 404 messages for an unknown restaurant and a missing menu are unchanged.
-- PR: Pending
+- PR: #40
