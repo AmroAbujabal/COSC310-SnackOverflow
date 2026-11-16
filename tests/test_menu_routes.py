@@ -126,10 +126,10 @@ def test_restaurant_without_menu_is_404(client, tmp_path, path):
     assert response.json() == {"detail": "Menu for restaurant 2 not found"}
 
 
-def test_service_raises_menu_not_found(tmp_path):
-    (tmp_path / "restaurants.json").write_text(json.dumps([NO_MENU_RESTAURANT]), encoding="utf-8")
-    (tmp_path / "menus.json").write_text("[]", encoding="utf-8")
-    settings = Settings(data_dir=tmp_path)
+def test_service_raises_menu_not_found(data_dir):
+    # conftest's restaurant 2, no menus.
+    (data_dir / "menus.json").write_text("[]", encoding="utf-8")
+    settings = Settings(data_dir=data_dir)
     service = MenuService(MenuRepository(settings), RestaurantRepository(settings))
 
     with pytest.raises(MenuNotFoundError):
