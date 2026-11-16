@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -10,6 +11,7 @@ from app.services.exceptions import (BusinessRuleError, DomainError, ForbiddenEr
 from app.routes.menus import router as menu_router
 
 app = FastAPI(title="SnackOverflow API")
+logger = logging.getLogger(__name__)
 
 # Error family -> HTTP status.
 STATUS_CODES = {NotFoundError: 404, BusinessRuleError: 409, ForbiddenError: 403}
@@ -28,6 +30,10 @@ async def domain_error_handler(request: Request, exc: DomainError):
         (code for cls, code in STATUS_CODES.items() if isinstance(exc, cls)),
         500,
     )
+    # Unmapped = our bug: log it, hide the message.
+    if status_code == 500:
+        logger.error("Unmapped DomainError", exc_info=exc)
+        return JSONResponse(status_code=500, content={"detail": "Internal server error"})
     # Same {"detail": ...} shape as FastAPI errors.
     return JSONResponse(status_code=status_code, content={"detail": str(exc)})
 

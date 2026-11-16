@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from app.main import domain_error_handler
+from app.main import app, domain_error_handler
 from app.services.exceptions import (
     BusinessRuleError,
     DomainError,
@@ -35,3 +35,9 @@ def test_unmapped_domain_error_is_a_server_error():
     response = asyncio.run(domain_error_handler(None, DomainError("oops")))
 
     assert response.status_code == 500
+    # Internal message stays out of the response.
+    assert json.loads(response.body) == {"detail": "Internal server error"}
+
+
+def test_handler_is_registered_for_domain_error():
+    assert app.exception_handlers[DomainError] is domain_error_handler
