@@ -4,7 +4,7 @@ from app.models.menu_item import MenuItem
 from app.models.menu_item_requests import MenuItemCreate, MenuItemUpdate
 from app.repositories.menu_repository import MenuRepository
 from app.repositories.restaurant_repository import RestaurantRepository
-from app.services.exceptions import (RestaurantNotFoundError, MenuItemNotFoundError,)
+from app.services.exceptions import (RestaurantNotFoundError, MenuItemNotFoundError, MenuNotFoundError,)
 
 class MenuService:
     def __init__(
@@ -18,11 +18,16 @@ class MenuService:
     def list_menus(self) -> list[Menu]:
         return self._repo.list_all()
 
-    def get_menu(self, restaurant_id: int) -> Menu | None:
+    def get_menu(self, restaurant_id: int) -> Menu:
         if self._restaurant_repo.get(restaurant_id) is None:
             raise RestaurantNotFoundError(restaurant_id)
 
-        return self._repo.get(restaurant_id)
+        menu = self._repo.get(restaurant_id)
+        # Restaurant exists, menu doesn't.
+        if menu is None:
+            raise MenuNotFoundError(restaurant_id)
+
+        return menu
 
     def add_menu_item(
         self,
