@@ -191,7 +191,7 @@ Each team member adds their own entries in the same PR as the work they describe
 - Validation: Ran `python -m pytest -q` (76 passed). Checked that the 404 messages for an unknown restaurant and a missing menu are unchanged.
 - PR: #40
 
-## Entry 16 — Decision Receipt M2.3 (domain errors)
+## Entry 19 — Decision Receipt M2.3 (domain errors)
 
 - Student(s): Amro
 - Artifact: docs/decision-receipt-m2-3-domain-errors.md, docs/decision-receipt-404.md
