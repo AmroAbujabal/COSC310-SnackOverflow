@@ -191,6 +191,8 @@ Each team member adds their own entries in the same PR as the work they describe
 - Validation: Ran `python -m pytest -q` (76 passed). Checked that the 404 messages for an unknown restaurant and a missing menu are unchanged.
 - PR: #40
 
+---
+
 ## Entry 16 — M2 Menu Availability
 
 - **Student(s):** Al-Munther Bahanshal
@@ -202,6 +204,20 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Validation:** Codex ran `.\.venv\Scripts\python.exe -m pytest -q` with cache disabled and a temporary test directory; all 125 tests passed after integration with upstream main (ae4771d). Tests cover availability defaults, creation, toggling, persistence through a fresh repository, preservation of other fields, invalid values (422), and unknown or mismatched restaurant/item IDs (404). Both frontend scripts passed `node --check`; a simulated DOM check verified checkbox state, boolean PATCH payload, form reset, and status labels. Browser demonstration by the student is pending.
 - **PR:** Pending (local feature branch; not pushed and no PR created).
 
+---
+
+## Entry 17 — Cart and Shared Menu Orderability Validation
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `app/models/cart.py`, `app/repositories/cart_repository.py`, `app/services/cart_service.py`, `app/routes/cart.py`, `data/carts.json`, `app/services/menu_services.py`, `app/core/config.py`, `app/main.py`, `tests/test_cart.py`, `README.md`, `docs/decision-receipt-menu-cart-M2.md`
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT / Codex (OpenAI)
+- **Purpose:** Implement Al-Munther's authenticated cart backend and centralize current menu-item orderability checks for cart and future checkout integration.
+- **Influence:** AI generated the cart models, JSON repository, service, API routes, shared MenuService.get_orderable_item helper, focused config/router registration, isolated tests, README API documentation and proposed decision receipt. Used the existing customer/auth foundation and DomainError handler. Checkout, customer/login endpoints and cart frontend remain assigned to teammates; student review and human peer review are pending.
+- **Validation:** Codex ran the full pytest suite with cache disabled and isolated temporary data; all 125 tests passed. Evidence covers Customer → Menu → Cart integration with real JWT authentication, service business rules, current-price totals, cart ownership, inactive customers, quantity validation, persistence/reload, concurrent cart updates, rollback after save failure, and API error documentation. Regression tests verify items disabled after insertion remain removable while additions/quantity changes fail. The complete checkout/order workflow and human browser demonstration remain pending team integration.
+- **PR:** Pending (local feature branch; not pushed and no PR created).
+
+---
 
 ## Entry 18 — Representative Menu Data
 
