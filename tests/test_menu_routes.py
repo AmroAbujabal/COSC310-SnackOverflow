@@ -11,6 +11,10 @@ from app.repositories.restaurant_repository import (
     RestaurantRepository,
     get_restaurant_repository,
 )
+from app.services.exceptions import MenuNotFoundError
+from app.services.menu_services import MenuService
+
+NO_MENU_RESTAURANT = {"id": 2, "name": "No Menu Cafe", "cuisine": "Cafe", "address": "1 Empty St", "rating": 3.0}
 
 
 @pytest.fixture
@@ -106,3 +110,27 @@ def test_menu_requires_existing_restaurant(client, tmp_path):
     response = client.get("/restaurants/1/menu")
 
     assert response.status_code == 404
+
+
+@pytest.mark.parametrize("path", ["/restaurants/2/menu", "/restaurants/2/menu/items"])
+def test_restaurant_without_menu_is_404(client, tmp_path, path):
+    # Restaurant 2 exists but has no menu.
+    restaurants = json.loads((tmp_path / "restaurants.json").read_text(encoding="utf-8"))
+    (tmp_path / "restaurants.json").write_text(
+        json.dumps(restaurants + [NO_MENU_RESTAURANT]), encoding="utf-8"
+    )
+
+    response = client.get(path)
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Menu for restaurant 2 not found"}
+
+
+def test_service_raises_menu_not_found(data_dir):
+    # conftest's restaurant 2, no menus.
+    (data_dir / "menus.json").write_text("[]", encoding="utf-8")
+    settings = Settings(data_dir=data_dir)
+    service = MenuService(MenuRepository(settings), RestaurantRepository(settings))
+
+    with pytest.raises(MenuNotFoundError):
+        service.get_menu(2)

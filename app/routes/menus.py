@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, Path, status
 
 from app.models.menu import Menu
 from app.models.menu_item import MenuItem
@@ -28,43 +28,27 @@ def build_service(
 @router.get(
     "/restaurants/{restaurant_id}/menu",
     response_model=Menu,
-    responses={404: {"description": "Restaurant or menu not found"}},
+    responses={404: {"model": ErrorResponse, "description": "Restaurant or menu not found"}},
 )
 def get_menu(
     restaurant_id: int,
     repo: MenuRepository = Depends(get_menu_repository),
     restaurant_repo: RestaurantRepository = Depends(get_restaurant_repository),
 ):
-    menu = build_service(repo, restaurant_repo).get_menu(restaurant_id)
-
-    if menu is None:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Menu for restaurant {restaurant_id} not found",
-        )
-
-    return menu
+    return build_service(repo, restaurant_repo).get_menu(restaurant_id)
 
 
 @router.get(
     "/restaurants/{restaurant_id}/menu/items",
     response_model=list[MenuItem],
-    responses={404: {"description": "Restaurant or menu not found"}},
+    responses={404: {"model": ErrorResponse, "description": "Restaurant or menu not found"}},
 )
 def get_menu_items(
     restaurant_id: int,
     repo: MenuRepository = Depends(get_menu_repository),
     restaurant_repo: RestaurantRepository = Depends(get_restaurant_repository),
 ):
-    menu = build_service(repo, restaurant_repo).get_menu(restaurant_id)
-
-    if menu is None:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Menu for restaurant {restaurant_id} not found",
-        )
-
-    return menu.items
+    return build_service(repo, restaurant_repo).get_menu(restaurant_id).items
 
 
 @router.post(

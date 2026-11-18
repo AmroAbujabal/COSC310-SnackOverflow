@@ -177,3 +177,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Influence:** Used AI-generated page, JavaScript, route, navigation, documentation, and test changes. The page calls the existing restaurant and menu endpoints and handles restaurants that do not have a menu yet.
 - **Validation:** Ran `python -m pytest -q` (57 passed). Opened `/management` in the browser and verified the restaurant list and an existing restaurant's menu load.
 - **PR:** Pending
+
+---
+
+## Entry 15 — DomainError Hierarchy and One Error Handler
+
+- Student(s): Amro
+- Artifact: app/services/exceptions.py, app/main.py, app/services/menu_services.py, app/routes/menus.py, tests/test_errors.py, tests/test_menu_routes.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Replace the per-error exception handlers with one DomainError handler that maps NotFoundError to 404, BusinessRuleError to 409 and ForbiddenError to 403, and move the missing-menu 404 from the routes into the service as MenuNotFoundError.
+- Influence: Used the generated hierarchy, handler, service change and tests. Wrote the tests first and confirmed they failed before adding the code. Reviewed each change line by line so I can explain it.
+- Validation: Ran `python -m pytest -q` (76 passed). Checked that the 404 messages for an unknown restaurant and a missing menu are unchanged.
+- PR: #40
