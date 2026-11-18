@@ -46,7 +46,7 @@ class OrderForbiddenError(ForbiddenError):
         super().__init__(f"You cannot view order {order_id}")
 
 class EmptyCartError(BusinessRuleError):
-    """The customer has no active cart, or it has no items."""
+    """The customer's cart has no items."""
 
     def __init__(self):
         super().__init__("Your cart is empty")

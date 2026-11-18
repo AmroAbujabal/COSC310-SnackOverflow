@@ -9,21 +9,21 @@ from app.repositories.order_repository import OrderRepository
 from app.services.checkout_service import CheckoutService
 from app.services.exceptions import BusinessRuleError, EmptyCartError
 
-# Fakes follow the cart/menu contract agreed with Al-Munther (2026-11-01):
-#   CartService.get_active_cart(customer_id) -> Cart | None, CartService.close_cart(cart_id)
-#   MenuService.get_orderable_item(restaurant_id, item_id) -> MenuItem (raises 404/409 itself)
+# Fakes mirror Al-Munther's CartService (get_or_create_active, clear) and
+# MenuService.get_orderable_item, so these tests isolate the checkout rules.
+# tests/test_checkout_routes.py runs checkout against the real services.
 
 
 class FakeCartService:
     def __init__(self, cart):
         self.cart = cart
-        self.closed = []
+        self.cleared = []
 
-    def get_active_cart(self, customer_id):
-        return self.cart if self.cart and self.cart.customer_id == customer_id else None
+    def get_or_create_active(self, customer_id):
+        return self.cart
 
-    def close_cart(self, cart_id):
-        self.closed.append(cart_id)
+    def clear(self, customer_id):
+        self.cleared.append(customer_id)
 
 
 class ItemUnavailableError(BusinessRuleError):
@@ -43,8 +43,8 @@ class FakeMenuService:
 
 def make_cart(lines, customer_id=1):
     return SimpleNamespace(
-        id=7, customer_id=customer_id, restaurant_id=1, status="active",
-        lines=[SimpleNamespace(item_id=item_id, quantity=qty) for item_id, qty in lines],
+        id=7, customer_id=customer_id, restaurant_id=1,
+        items=[SimpleNamespace(item_id=item_id, quantity=qty) for item_id, qty in lines],
     )
 
 
@@ -67,7 +67,7 @@ def checkout(repo, cart, unavailable=()):
     return service.checkout(CUSTOMER), carts
 
 
-def test_checkout_saves_an_order_at_current_prices_and_closes_the_cart(repo):
+def test_checkout_saves_an_order_at_current_prices_and_clears_the_cart(repo):
     order, carts = checkout(repo, make_cart([(1, 2), (2, 3)]))
 
     assert [(line.name, line.unit_price, line.line_total) for line in order.lines] == [
@@ -78,13 +78,7 @@ def test_checkout_saves_an_order_at_current_prices_and_closes_the_cart(repo):
     assert (order.customer_id, order.restaurant_id) == (1, 1)
     assert order.created_at.tzinfo is not None
     assert repo.get(order.id) == order
-    assert carts.closed == [7]
-
-
-def test_no_active_cart_is_409_and_saves_nothing(repo):
-    with pytest.raises(EmptyCartError):
-        checkout(repo, None)
-    assert repo.list_all() == []
+    assert carts.cleared == [1]
 
 
 def test_empty_cart_is_409_and_saves_nothing(repo):
@@ -101,7 +95,7 @@ def test_unavailable_item_saves_nothing_and_keeps_the_cart(repo):
         service.checkout(CUSTOMER)
 
     assert repo.list_all() == []
-    assert carts.closed == []
+    assert carts.cleared == []
 
 
 def test_cart_stays_open_if_saving_the_order_fails(repo, monkeypatch):
@@ -114,4 +108,4 @@ def test_cart_stays_open_if_saving_the_order_fails(repo, monkeypatch):
     with pytest.raises(OSError):
         CheckoutService(repo, carts, FakeMenuService(MENU)).checkout(CUSTOMER)
 
-    assert carts.closed == []
+    assert carts.cleared == []
