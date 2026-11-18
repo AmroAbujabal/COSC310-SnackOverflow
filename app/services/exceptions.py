@@ -34,3 +34,13 @@ class MenuItemNotFoundError(NotFoundError):
             f"Menu item {item_id} not found "
             f"for restaurant {restaurant_id}"
         )
+
+class OrderNotFoundError(NotFoundError):
+    def __init__(self, order_id: int):
+        super().__init__(f"Order {order_id} not found")
+
+class OrderForbiddenError(ForbiddenError):
+    """The order belongs to another customer and the caller is not an admin."""
+
+    def __init__(self, order_id: int):
+        super().__init__(f"You cannot view order {order_id}")
