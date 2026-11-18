@@ -200,4 +200,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: Record the one-hierarchy, one-handler error design from PR #40 as a Decision Receipt, and mark receipt-404 accepted and partly superseded.
 - Influence: AI drafted the receipt from the merged code, tests and the team's 2026-11-01 decisions. I checked the reasoning and the options against what we discussed.
 - Validation: Checked every cited file and test exists on main. Ran the cited tests (14 passed).
-- PR: #pending
+- PR: #42
