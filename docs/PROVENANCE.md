@@ -190,3 +190,26 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated hierarchy, handler, service change and tests. Wrote the tests first and confirmed they failed before adding the code. Reviewed each change line by line so I can explain it.
 - Validation: Ran `python -m pytest -q` (76 passed). Checked that the 404 messages for an unknown restaurant and a missing menu are unchanged.
 - PR: #40
+
+## Entry 16 — M2 Menu Availability
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `app/models/menu_item.py`, `app/models/menu_item_requests.py`, `app/routes/menus.py`, `app/frontend/management.html`, `app/frontend/management.js`, `app/frontend/app.js`, `tests/test_menu_writes.py`
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT / Codex (OpenAI)
+- **Purpose:** Implement menu-item availability using the existing route → service → repository → JSON architecture, with management controls and customer-visible status.
+- **Influence:** AI generated the availability/deactivation model and request fields, API response schemas, management checkbox, management status labels and filtering unavailable/inactive items from customer browsing, and regression tests. Existing service and repository logic was reused. Reapplied these changes on upstream main (ae4771d), preserving its authentication foundation and DomainError handling. Student review and demonstration are pending.
+- **Validation:** Codex ran `.\.venv\Scripts\python.exe -m pytest -q` with cache disabled and a temporary test directory; all 125 tests passed after integration with upstream main (ae4771d). Tests cover availability defaults, creation, toggling, persistence through a fresh repository, preservation of other fields, invalid values (422), and unknown or mismatched restaurant/item IDs (404). Both frontend scripts passed `node --check`; a simulated DOM check verified checkbox state, boolean PATCH payload, form reset, and status labels. Browser demonstration by the student is pending.
+- **PR:** Pending (local feature branch; not pushed and no PR created).
+
+
+## Entry 18 — Representative Menu Data
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `data/menus.json`
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT / Codex (OpenAI)
+- **Purpose:** Add representative menu items for the two restaurants that had no sample menu, as requested for local testing and demonstration.
+- **Influence:** AI supplied six sample dish names and prices and explicit available/active flags, preserving the original two items and their IDs. An empty menu remains a valid application state.
+- **Validation:** Validated the JSON using Menu models, checked unique item IDs and restaurant relationships, and reran the full isolated pytest suite (125 passed).
+    - **PR:** Pending (local feature branch; not pushed and no PR created).

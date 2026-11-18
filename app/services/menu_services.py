@@ -4,6 +4,7 @@ from app.models.menu_item import MenuItem
 from app.models.menu_item_requests import MenuItemCreate, MenuItemUpdate
 from app.repositories.menu_repository import MenuRepository
 from app.repositories.restaurant_repository import RestaurantRepository
+from app.services.exceptions import BusinessRuleError
 from app.services.exceptions import (RestaurantNotFoundError, MenuItemNotFoundError, MenuNotFoundError,)
 
 class MenuService:
@@ -28,6 +29,16 @@ class MenuService:
             raise MenuNotFoundError(restaurant_id)
 
         return menu
+
+    def get_orderable_item(self, restaurant_id: int, item_id: int) -> MenuItem:
+        """Shared cart/checkout validation; always reloads current catalog state."""
+        menu = self.get_menu(restaurant_id)
+        item = next((i for i in menu.items if i.item_id == item_id), None)
+        if item is None:
+            raise MenuItemNotFoundError(restaurant_id, item_id)
+        if not item.active or not item.available:
+            raise BusinessRuleError(f"Menu item {item_id} is unavailable or deactivated")
+        return item
 
     def add_menu_item(
         self,

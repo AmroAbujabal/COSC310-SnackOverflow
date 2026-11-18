@@ -54,6 +54,7 @@ def get_menu_items(
 @router.post(
     "/restaurants/{restaurant_id}/menu/items",
     status_code=201,
+    response_model=MenuItem,
     responses={
         404: {
             "model": ErrorResponse,
@@ -75,6 +76,7 @@ def add_menu_item(
 
 @router.patch(
     "/restaurants/{restaurant_id}/menu/items/{item_id}",
+    response_model=MenuItem,
     responses={
         404: {
             "model": ErrorResponse,
