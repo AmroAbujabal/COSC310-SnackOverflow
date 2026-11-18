@@ -39,6 +39,10 @@ class Settings:
     def customers_file(self) -> Path:
         return self.data_dir / "customers.json"
 
+    @property
+    def orders_file(self) -> Path:
+        return self.data_dir / "orders.json"
+
 
 def get_settings() -> Settings:
     data_dir = os.getenv("SNACKOVERFLOW_DATA_DIR")
