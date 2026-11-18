@@ -190,3 +190,14 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: Used the generated hierarchy, handler, service change and tests. Wrote the tests first and confirmed they failed before adding the code. Reviewed each change line by line so I can explain it.
 - Validation: Ran `python -m pytest -q` (76 passed). Checked that the 404 messages for an unknown restaurant and a missing menu are unchanged.
 - PR: #40
+
+## Entry 19 — Decision Receipt M2.3 (domain errors)
+
+- Student(s): Amro
+- Artifact: docs/decision-receipt-m2-3-domain-errors.md, docs/decision-receipt-404.md
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Record the one-hierarchy, one-handler error design from PR #40 as a Decision Receipt, and mark receipt-404 accepted and partly superseded.
+- Influence: AI drafted the receipt from the merged code, tests and the team's 2026-11-01 decisions. I checked the reasoning and the options against what we discussed.
+- Validation: Checked every cited file and test exists on main. Ran the cited tests (14 passed).
+- PR: #42
