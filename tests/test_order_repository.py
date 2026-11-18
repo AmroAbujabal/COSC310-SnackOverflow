@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 from app.core.config import Settings
@@ -41,3 +42,11 @@ def test_list_for_customer_returns_only_their_orders(order_repo):
     order_repo.create(make_order(customer_id=1))
 
     assert [order.id for order in order_repo.list_for_customer(1)] == [1, 3]
+
+
+def test_concurrent_creates_get_unique_ids_and_none_are_lost(order_repo):
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        created = list(pool.map(lambda _: order_repo.create(make_order()), range(20)))
+
+    assert sorted(order.id for order in created) == list(range(1, 21))
+    assert len(order_repo.list_all()) == 20

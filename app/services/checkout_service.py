@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from threading import Lock
 
 from app.models.customer import Customer
 from app.models.order import Order, OrderLine
@@ -7,6 +8,10 @@ from app.services.cart_service import CartService
 from app.services.exceptions import EmptyCartError
 from app.services.menu_services import MenuService
 from app.core.pricing import line_total, money, order_total
+
+# One checkout at a time, so a double-click can't turn one cart into two orders.
+# This serialises every customer's checkout; fine at our scale, use per-customer locks if it ever isn't.
+_checkout_lock = Lock()
 
 
 class CheckoutService:
@@ -22,7 +27,11 @@ class CheckoutService:
         self._menu = menu_service
 
     def checkout(self, user: Customer) -> Order:
-        # Everything before create() only reads, so a failure leaves nothing half-written.
+        with _checkout_lock:
+            return self._checkout(user)
+
+    def _checkout(self, user: Customer) -> Order:
+        # No order or cart change happens before create(), so a failed check leaves both as they were.
         # Also 403s a customer deactivated since their token was issued.
         cart = self._carts.get_or_create_active(user.id)
         if not cart.items:

@@ -65,7 +65,7 @@ def get_checkout_service(
     summary="Place an order from my cart",
     description=(
         "Re-checks every cart item against the current menu, saves an order at today's prices, "
-        "then empties the cart. If anything fails, no order is saved and the cart is unchanged."
+        "then empties the cart. If any item fails the check, no order is saved and the cart is unchanged."
     ),
     responses={
         401: {"model": ErrorResponse},

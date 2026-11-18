@@ -1,3 +1,5 @@
+import time
+from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 
 import pytest
@@ -100,3 +102,32 @@ def test_cart_stays_open_if_saving_the_order_fails(order_repo, monkeypatch):
         service.checkout(CUSTOMER)
 
     assert carts.cleared == []
+
+
+class SlowRealisticCart(FakeCartService):
+    """Reads slowly and really empties on clear, so overlapping checkouts can race."""
+
+    def get_or_create_active(self, customer_id):
+        cart = make_cart([(line.item_id, line.quantity) for line in self.cart.items])
+        time.sleep(0.05)
+        return cart
+
+    def clear(self, customer_id):
+        self.cart = make_cart([])
+
+
+def test_double_click_checkout_places_only_one_order(order_repo):
+    carts = SlowRealisticCart(make_cart([(1, 1)]))
+    service = CheckoutService(order_repo, carts, FakeMenuService(MENU))
+
+    def attempt(_):
+        try:
+            return service.checkout(CUSTOMER)
+        except EmptyCartError:
+            return None
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(attempt, range(2)))
+
+    assert len(order_repo.list_all()) == 1
+    assert results.count(None) == 1
