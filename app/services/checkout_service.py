@@ -6,7 +6,7 @@ from app.repositories.order_repository import OrderRepository
 from app.services.cart_service import CartService
 from app.services.exceptions import EmptyCartError
 from app.services.menu_services import MenuService
-from app.services.pricing import line_total, money, order_total
+from app.core.pricing import line_total, money, order_total
 
 
 class CheckoutService:
@@ -22,7 +22,7 @@ class CheckoutService:
         self._menu = menu_service
 
     def checkout(self, user: Customer) -> Order:
-        # 1-5 only read, so a failure leaves nothing half-written.
+        # Everything before create() only reads, so a failure leaves nothing half-written.
         # Also 403s a customer deactivated since their token was issued.
         cart = self._carts.get_or_create_active(user.id)
         if not cart.items:
@@ -38,7 +38,7 @@ class CheckoutService:
             created_at=datetime.now(timezone.utc),
         )
 
-        # 6 save, then 7 empty the cart: if saving fails the cart is untouched and the customer can retry.
+        # Save first, then empty the cart: if saving fails the cart is untouched and the customer can retry.
         saved = self._orders.create(order)
         self._carts.clear(user.id)
         return saved

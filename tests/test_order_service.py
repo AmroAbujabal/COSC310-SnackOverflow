@@ -2,10 +2,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from app.core.config import Settings
 from app.models.customer import Customer
 from app.models.order import Order, OrderLine
-from app.repositories.order_repository import OrderRepository
 from app.services.exceptions import OrderForbiddenError, OrderNotFoundError
 from app.services.order_service import OrderService
 
@@ -26,29 +24,23 @@ def make_order(customer_id):
 
 
 @pytest.fixture
-def repo(tmp_path):
-    (tmp_path / "orders.json").write_text("[]", encoding="utf-8")
-    return OrderRepository(Settings(data_dir=tmp_path))
+def service(order_repo):
+    return OrderService(order_repo)
 
 
-@pytest.fixture
-def service(repo):
-    return OrderService(repo)
-
-
-def test_owner_can_get_their_order(repo, service):
-    order = repo.create(make_order(customer_id=1))
+def test_owner_can_get_their_order(order_repo, service):
+    order = order_repo.create(make_order(customer_id=1))
     assert service.get_order(order.id, make_user(1)) == order
 
 
-def test_admin_can_get_any_order(repo, service):
-    order = repo.create(make_order(customer_id=1))
+def test_admin_can_get_any_order(order_repo, service):
+    order = order_repo.create(make_order(customer_id=1))
     assert service.get_order(order.id, make_user(9, role="admin")) == order
 
 
 @pytest.mark.parametrize("role", ["customer", "owner"])
-def test_other_users_are_forbidden(repo, service, role):
-    order = repo.create(make_order(customer_id=1))
+def test_other_users_are_forbidden(order_repo, service, role):
+    order = order_repo.create(make_order(customer_id=1))
     with pytest.raises(OrderForbiddenError):
         service.get_order(order.id, make_user(2, role=role))
 
@@ -58,9 +50,9 @@ def test_unknown_order_is_not_found(service):
         service.get_order(99, make_user(1))
 
 
-def test_list_my_orders_returns_only_mine(repo, service):
-    repo.create(make_order(customer_id=1))
-    repo.create(make_order(customer_id=2))
+def test_list_my_orders_returns_only_mine(order_repo, service):
+    order_repo.create(make_order(customer_id=1))
+    order_repo.create(make_order(customer_id=2))
 
     orders = service.list_my_orders(make_user(1))
 

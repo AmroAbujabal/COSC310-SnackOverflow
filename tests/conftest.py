@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from app.core.config import Settings, get_settings
 from app.main import app
+from app.repositories.order_repository import OrderRepository
 
 RESTAURANTS = [
     {"id": 1, "name": "Pretty Pizza", "cuisine": "Italian", "address": "294 Orchid Street", "rating": 4.5},
@@ -24,3 +25,9 @@ def client(data_dir):
     app.dependency_overrides[get_settings] = lambda: Settings(data_dir=data_dir)
     yield TestClient(app)
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def order_repo(tmp_path):
+    (tmp_path / "orders.json").write_text("[]", encoding="utf-8")
+    return OrderRepository(Settings(data_dir=tmp_path))

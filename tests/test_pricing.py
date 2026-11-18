@@ -1,4 +1,4 @@
-from app.services.pricing import line_total, money, order_total
+from app.core.pricing import line_total, money, order_total
 
 
 def test_money_avoids_float_error():

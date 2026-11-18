@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.services.pricing import line_total, order_total
+from app.core.pricing import line_total, order_total
 
 
 class OrderLine(BaseModel):

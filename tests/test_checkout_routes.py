@@ -34,7 +34,7 @@ def settings(tmp_path):
 
 
 @pytest.fixture
-def client(settings):
+def checkout_client(settings):
     app.dependency_overrides[get_settings] = lambda: settings
     with TestClient(app) as client:
         client.headers["Authorization"] = f"Bearer {create_access_token(1, settings)}"
@@ -42,8 +42,8 @@ def client(settings):
     app.dependency_overrides.clear()
 
 
-def add_to_cart(client, item_id, quantity):
-    response = client.post("/cart/items", json=dict(restaurant_id=1, item_id=item_id, quantity=quantity))
+def add_to_cart(checkout_client, item_id, quantity):
+    response = checkout_client.post("/cart/items", json=dict(restaurant_id=1, item_id=item_id, quantity=quantity))
     assert response.status_code == 200
 
 
@@ -52,50 +52,50 @@ def update_item(settings, item_id, **changes):
     menus.update_menu_item(1, item_id, MenuItemUpdate(**changes))
 
 
-def test_checkout_places_the_order_and_empties_the_cart(client, settings):
-    add_to_cart(client, 1, 3)
-    add_to_cart(client, 2, 1)
+def test_checkout_places_the_order_and_empties_the_cart(checkout_client, settings):
+    add_to_cart(checkout_client, 1, 3)
+    add_to_cart(checkout_client, 2, 1)
 
-    response = client.post("/checkout")
+    response = checkout_client.post("/checkout")
 
     assert response.status_code == 201
     order = response.json()
     assert [(line["name"], line["line_total"]) for line in order["lines"]] == [("Soup", 0.3), ("Bread", 2.5)]
     assert order["total"] == 2.8
-    assert client.get("/cart").json()["items"] == []
-    assert client.get(f"/orders/{order['id']}").json() == order
+    assert checkout_client.get("/cart").json()["items"] == []
+    assert checkout_client.get(f"/orders/{order['id']}").json() == order
     assert OrderRepository(settings).get(order["id"]) is not None  # saved to orders.json
 
 
-def test_checkout_uses_the_price_at_checkout_and_the_order_keeps_it(client, settings):
-    add_to_cart(client, 2, 2)
+def test_checkout_uses_the_price_at_checkout_and_the_order_keeps_it(checkout_client, settings):
+    add_to_cart(checkout_client, 2, 2)
     update_item(settings, 2, price=3.00)  # price rises after it was added to the cart
 
-    order = client.post("/checkout").json()
+    order = checkout_client.post("/checkout").json()
     update_item(settings, 2, price=9.99)  # and again after the order was placed
 
     assert order["total"] == 6.0
-    assert client.get(f"/orders/{order['id']}").json()["total"] == 6.0
+    assert checkout_client.get(f"/orders/{order['id']}").json()["total"] == 6.0
 
 
-def test_item_that_became_unavailable_is_409_and_cart_is_kept(client, settings):
-    add_to_cart(client, 1, 1)
+def test_item_that_became_unavailable_is_409_and_cart_is_kept(checkout_client, settings):
+    add_to_cart(checkout_client, 1, 1)
     update_item(settings, 1, available=False)
 
-    response = client.post("/checkout")
+    response = checkout_client.post("/checkout")
 
     assert response.status_code == 409
     assert response.json() == {"detail": "Menu item 1 is unavailable or deactivated"}
-    assert len(client.get("/cart").json()["items"]) == 1
+    assert len(checkout_client.get("/cart").json()["items"]) == 1
     assert OrderRepository(settings).list_all() == []
 
 
-def test_empty_cart_is_409(client):
-    response = client.post("/checkout")
+def test_empty_cart_is_409(checkout_client):
+    response = checkout_client.post("/checkout")
     assert response.status_code == 409
     assert response.json() == {"detail": "Your cart is empty"}
 
 
-def test_checkout_requires_a_token(client):
-    del client.headers["Authorization"]
-    assert client.post("/checkout").status_code == 401
+def test_checkout_requires_a_token(checkout_client):
+    del checkout_client.headers["Authorization"]
+    assert checkout_client.post("/checkout").status_code == 401
