@@ -1,48 +1,43 @@
-
-import json
-
 from fastapi import Depends
 
 from app.core.config import Settings, get_settings
 from app.models.restaurant import Restaurant
 from app.models.restaurant_requests import RestaurantCreate, RestaurantUpdate
+from app.repositories.json_repository import JsonRepository
 
 
-class RestaurantRepository:
+class RestaurantRepository(JsonRepository[Restaurant]):
     """Reads and writes restaurant records in JSON storage."""
 
     def __init__(self, settings: Settings):
-        self._path = settings.restaurants_file
-
-    def _save(self, restaurants: list[Restaurant]) -> None:
-        self._path.write_text(
-            json.dumps(
-                [restaurant.model_dump() for restaurant in restaurants],
-                indent=2,
-            ) + "\n",
-            encoding="utf-8",
-        )
-
-    def list_all(self) -> list[Restaurant]:
-        with open(self._path, encoding="utf-8") as file:
-            return [Restaurant(**row) for row in json.load(file)]
+        super().__init__(settings.restaurants_file, Restaurant)
 
     def get(self, restaurant_id: int) -> Restaurant | None:
         return next(
-            (r for r in self.list_all() if r.id == restaurant_id),
+            (
+                restaurant
+                for restaurant in self.list_all()
+                if restaurant.id == restaurant_id
+            ),
             None,
         )
 
-    def create(self, request: RestaurantCreate) -> Restaurant:
+    def create(
+        self,
+        request: RestaurantCreate,
+        owner_id: int,
+    ) -> Restaurant:
         restaurants = self.list_all()
-        next_id = max((r.id for r in restaurants), default=0) + 1
 
         restaurant = Restaurant(
-            id=next_id,
+            id=self._next_id([item.id for item in restaurants]),
+            owner_id=owner_id,
             **request.model_dump(),
         )
+
         restaurants.append(restaurant)
         self._save(restaurants)
+
         return restaurant
 
     def update(
@@ -62,6 +57,7 @@ class RestaurantRepository:
                 updated_restaurant = Restaurant(**updated_data)
                 restaurants[index] = updated_restaurant
                 self._save(restaurants)
+
                 return updated_restaurant
 
         return None

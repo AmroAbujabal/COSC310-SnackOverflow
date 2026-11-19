@@ -1,13 +1,12 @@
 
 import json
-
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 from app.core.config import Settings, get_settings
 from app.main import app
 from app.models.menu_item_requests import MenuItemCreate
-
+from app.core.security import create_access_token
 
 @pytest.fixture
 def menu_write_client(tmp_path):
@@ -18,6 +17,7 @@ def menu_write_client(tmp_path):
             "cuisine": "Indian",
             "address": "123 Main Street",
             "rating": 4.7,
+            "owner_id": 1,
         },
         {
             "id": 2,
@@ -25,6 +25,7 @@ def menu_write_client(tmp_path):
             "cuisine": "Japanese",
             "address": "789 Daisy Road",
             "rating": 4.2,
+            "owner_id": 1,
         },
     ]
 
@@ -48,22 +49,42 @@ def menu_write_client(tmp_path):
         }
     ]
 
+    owner = [
+        {
+            "id": 1,
+            "name": "Test Owner",
+            "email": "owner@example.com",
+            "password_hash": "not-used-by-token-tests",
+            "address": "123 Main Street",
+            "role": "owner",
+            "is_active": True,
+        }
+    ]
+
     (tmp_path / "restaurants.json").write_text(
         json.dumps(restaurants), encoding="utf-8"
     )
     (tmp_path / "menus.json").write_text(
         json.dumps(menus), encoding="utf-8"
     )
-
-    app.dependency_overrides[get_settings] = (
-        lambda: Settings(data_dir=tmp_path)
+    (tmp_path / "customers.json").write_text(
+        json.dumps(owner), encoding="utf-8"
     )
 
+    settings = Settings(data_dir=tmp_path)
+    token = create_access_token(1, settings)
+
+    app.dependency_overrides[get_settings] = lambda: settings
+
     try:
-        with TestClient(app, raise_server_exceptions=False) as test_client:
+        with TestClient(
+            app,
+            raise_server_exceptions=False,
+            headers={"Authorization": f"Bearer {token}"},
+        ) as test_client:
             yield test_client
     finally:
-        app.dependency_overrides.pop(get_settings, None)
+        app.dependency_overrides.clear()
 
 
 def test_add_menu_item(menu_write_client, tmp_path):
@@ -183,6 +204,7 @@ def test_update_menu_item_rejects_null_price(menu_write_client):
 
     assert response.status_code == 422
 
+
 def test_add_menu_item_rejects_infinite_price(menu_write_client):
     with pytest.raises(ValidationError):
         MenuItemCreate.model_validate_json(
@@ -278,3 +300,39 @@ def test_deactivate_hide_and_restore_item(menu_write_client, tmp_path):
     assert stored[0]["items"][0]["active"] is False
     assert menu_write_client.patch(url, json={"active": True}).status_code == 200
     assert menu_write_client.get("/restaurants/1/menu/items").json()[0] == original
+
+
+def test_owner_cannot_modify_another_owners_menu(
+    owner_client,
+    data_dir,
+):
+    restaurants_path = data_dir / "restaurants.json"
+
+    restaurants = json.loads(
+        restaurants_path.read_text(encoding="utf-8")
+    )
+
+    # Restaurant 2 belongs to a different owner.
+    restaurants[1]["owner_id"] = 2
+
+    restaurants_path.write_text(
+        json.dumps(restaurants),
+        encoding="utf-8",
+    )
+
+    response = owner_client.post(
+        "/restaurants/2/menu/items",
+        json={
+            "name": "Unauthorized Dish",
+            "price": 10.00,
+        },
+    )
+
+    assert response.status_code == 403
+
+    # Confirm the restaurant still belongs to owner 2.
+    saved = json.loads(
+        restaurants_path.read_text(encoding="utf-8")
+    )
+
+    assert saved[1]["owner_id"] == 2

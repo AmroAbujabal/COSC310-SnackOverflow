@@ -6,8 +6,14 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.routes.restaurants import router as restaurant_router
-from app.services.exceptions import (BusinessRuleError, DomainError, ForbiddenError, NotFoundError,)
-
+from app.routes.auth import router as auth_router
+from app.routes.customers import router as customer_router
+from app.services.exceptions import (
+    BusinessRuleError,
+    DomainError,
+    ForbiddenError,
+    NotFoundError,
+)
 from app.routes.menus import router as menu_router
 from app.routes.cart import router as cart_router
 from app.routes.orders import router as order_router
@@ -39,6 +45,9 @@ async def domain_error_handler(request: Request, exc: DomainError):
     # Same {"detail": ...} shape as FastAPI errors.
     return JSONResponse(status_code=status_code, content={"detail": str(exc)})
 
+
+app.include_router(auth_router)
+app.include_router(customer_router)
 app.include_router(restaurant_router)
 app.include_router(menu_router)
 app.include_router(cart_router)

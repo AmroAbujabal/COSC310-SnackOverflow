@@ -2,8 +2,8 @@
 import json
 
 
-def test_create_restaurant(client, data_dir):
-    response = client.post(
+def test_create_restaurant(owner_client, data_dir):
+    response = owner_client.post(
         "/restaurants",
         json={
             "name": "Noodle House",
@@ -22,19 +22,22 @@ def test_create_restaurant(client, data_dir):
         "cuisine": "Chinese",
         "address": "45 Main Street",
         "rating": 4.3,
+        "owner_id": 1,
     }
 
     saved = json.loads(
         (data_dir / "restaurants.json").read_text(encoding="utf-8")
     )
+
     assert any(
         restaurant["id"] == 3
         and restaurant["name"] == "Noodle House"
+        and restaurant["owner_id"] == 1
         for restaurant in saved
     )
 
 
-def test_create_restaurant_generates_distinct_ids(client):
+def test_create_restaurant_generates_distinct_ids(owner_client):
     payload = {
         "name": "Noodle House",
         "cuisine": "Chinese",
@@ -42,8 +45,8 @@ def test_create_restaurant_generates_distinct_ids(client):
         "rating": 4.3,
     }
 
-    first = client.post("/restaurants", json=payload)
-    second = client.post(
+    first = owner_client.post("/restaurants", json=payload)
+    second = owner_client.post(
         "/restaurants",
         json={**payload, "name": "Taco Place"},
     )
@@ -52,9 +55,12 @@ def test_create_restaurant_generates_distinct_ids(client):
     assert second.status_code == 201
     assert first.json()["id"] != second.json()["id"]
 
+    assert first.json()["owner_id"] == 1
+    assert second.json()["owner_id"] == 1
 
-def test_update_restaurant_preserves_unmodified_fields(client):
-    response = client.patch(
+
+def test_update_restaurant_preserves_unmodified_fields(owner_client):
+    response = owner_client.patch(
         "/restaurants/1",
         json={"rating": 4.8},
     )
@@ -66,11 +72,12 @@ def test_update_restaurant_preserves_unmodified_fields(client):
         "cuisine": "Italian",
         "address": "294 Orchid Street",
         "rating": 4.8,
+        "owner_id": 1,
     }
 
 
-def test_update_restaurant_not_found(client):
-    response = client.patch(
+def test_update_restaurant_not_found(owner_client):
+    response = owner_client.patch(
         "/restaurants/999",
         json={"rating": 4.8},
     )
@@ -81,8 +88,40 @@ def test_update_restaurant_not_found(client):
     }
 
 
-def test_create_restaurant_rejects_invalid_rating(client):
-    response = client.post(
+def test_owner_cannot_update_another_owners_restaurant(
+    owner_client,
+    data_dir,
+):
+    restaurants = json.loads(
+        (data_dir / "restaurants.json").read_text(encoding="utf-8")
+    )
+
+    # Restaurant 2 belongs to a different owner.
+    restaurants[1]["owner_id"] = 2
+
+    (data_dir / "restaurants.json").write_text(
+        json.dumps(restaurants),
+        encoding="utf-8",
+    )
+
+    response = owner_client.patch(
+        "/restaurants/2",
+        json={"rating": 4.9},
+    )
+
+    assert response.status_code == 403
+
+    # Confirm that the restaurant was not changed.
+    saved = json.loads(
+        (data_dir / "restaurants.json").read_text(encoding="utf-8")
+    )
+
+    assert saved[1]["rating"] == 4.2
+    assert saved[1]["owner_id"] == 2
+
+
+def test_create_restaurant_rejects_invalid_rating(owner_client):
+    response = owner_client.post(
         "/restaurants",
         json={
             "name": "Noodle House",
@@ -95,8 +134,8 @@ def test_create_restaurant_rejects_invalid_rating(client):
     assert response.status_code == 422
 
 
-def test_create_restaurant_rejects_blank_name(client):
-    response = client.post(
+def test_create_restaurant_rejects_blank_name(owner_client):
+    response = owner_client.post(
         "/restaurants",
         json={
             "name": "   ",
@@ -109,8 +148,8 @@ def test_create_restaurant_rejects_blank_name(client):
     assert response.status_code == 422
 
 
-def test_update_restaurant_rejects_empty_body(client):
-    response = client.patch(
+def test_update_restaurant_rejects_empty_body(owner_client):
+    response = owner_client.patch(
         "/restaurants/1",
         json={},
     )
@@ -118,8 +157,8 @@ def test_update_restaurant_rejects_empty_body(client):
     assert response.status_code == 422
 
 
-def test_update_restaurant_rejects_null_rating(client):
-    response = client.patch(
+def test_update_restaurant_rejects_null_rating(owner_client):
+    response = owner_client.patch(
         "/restaurants/1",
         json={"rating": None},
     )
