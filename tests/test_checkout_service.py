@@ -104,6 +104,39 @@ def test_cart_stays_open_if_saving_the_order_fails(order_repo, monkeypatch):
     assert carts.cleared == []
 
 
+def test_order_is_removed_if_emptying_the_cart_fails(order_repo):
+    # Otherwise the error tells the customer to retry, and the retry orders the same cart twice.
+    service, carts = make_service(order_repo, make_cart([(1, 1)]))
+
+    def broken_clear(customer_id):
+        raise OSError("disk full")
+
+    carts.clear = broken_clear
+
+    with pytest.raises(OSError):
+        service.checkout(CUSTOMER)
+
+    assert order_repo.list_all() == []
+
+
+def test_if_the_undo_also_fails_the_original_error_is_raised(order_repo, monkeypatch, caplog):
+    service, carts = make_service(order_repo, make_cart([(1, 1)]))
+
+    def broken_clear(customer_id):
+        raise OSError("cart disk full")
+
+    def broken_delete(order_id):
+        raise OSError("orders disk full")
+
+    carts.clear = broken_clear
+    monkeypatch.setattr(order_repo, "delete", broken_delete)
+
+    with pytest.raises(OSError, match="cart disk full"):
+        service.checkout(CUSTOMER)
+
+    assert "Could not undo order 1" in caplog.text
+
+
 class SlowRealisticCart(FakeCartService):
     """Reads slowly and really empties on clear, so overlapping checkouts can race."""
 

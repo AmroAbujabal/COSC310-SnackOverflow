@@ -49,6 +49,10 @@ class OrderRepository:
             self._save(orders)
             return new_order
 
+    def delete(self, order_id: int) -> None:
+        with _order_lock:
+            self._save([order for order in self.list_all() if order.id != order_id])
+
 
 def get_order_repository(settings: Settings = Depends(get_settings)) -> OrderRepository:
     return OrderRepository(settings)

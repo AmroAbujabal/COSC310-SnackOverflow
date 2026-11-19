@@ -9,6 +9,8 @@ from app.models.cart import Cart
 
 # All instances in one server process share the lock. Run with one worker.
 _cart_lock = RLock()
+# Checkout holds this for its whole run, so no cart change lands between reading and clearing the cart.
+cart_lock = _cart_lock
 
 
 class CartRepository:

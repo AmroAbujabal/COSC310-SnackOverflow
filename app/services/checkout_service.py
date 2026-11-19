@@ -1,17 +1,16 @@
+import logging
 from datetime import datetime, timezone
-from threading import Lock
 
 from app.models.customer import Customer
 from app.models.order import Order, OrderLine
+from app.repositories.cart_repository import cart_lock
 from app.repositories.order_repository import OrderRepository
 from app.services.cart_service import CartService
 from app.services.exceptions import EmptyCartError
 from app.services.menu_services import MenuService
 from app.core.pricing import line_total, money, order_total
 
-# One checkout at a time, so a double-click can't turn one cart into two orders.
-# This serialises every customer's checkout; fine at our scale, use per-customer locks if it ever isn't.
-_checkout_lock = Lock()
+logger = logging.getLogger(__name__)
 
 
 class CheckoutService:
@@ -27,11 +26,15 @@ class CheckoutService:
         self._menu = menu_service
 
     def checkout(self, user: Customer) -> Order:
-        with _checkout_lock:
+        # Hold the cart lock for the whole checkout: a double-click can't turn one cart into two orders,
+        # and an item added mid-checkout waits for the next order instead of being cleared with this one.
+        # This serialises every cart action across customers; fine at our scale, use per-customer locks if not.
+        with cart_lock:
             return self._checkout(user)
 
     def _checkout(self, user: Customer) -> Order:
-        # No order or cart change happens before create(), so a failed check leaves both as they were.
+        # Nothing is ordered or cleared before create(), so a failed check leaves the cart's items as they
+        # were (get_or_create_active may create an empty cart, which changes nothing the customer sees).
         # Also 403s a customer deactivated since their token was issued.
         cart = self._carts.get_or_create_active(user.id)
         if not cart.items:
@@ -49,7 +52,17 @@ class CheckoutService:
 
         # Save first, then empty the cart: if saving fails the cart is untouched and the customer can retry.
         saved = self._orders.create(order)
-        self._carts.clear(user.id)
+        try:
+            self._carts.clear(user.id)
+        except Exception:
+            # Undo the order, or the customer's retry would order the same cart twice.
+            # ponytail: not a real transaction. If the delete fails too, the duplicate risk is back; and for
+            # those few ms a reader can see the order, whose id the next order then reuses. A DB closes both.
+            try:
+                self._orders.delete(saved.id)
+            except Exception:
+                logger.exception("Could not undo order %s after emptying the cart failed", saved.id)
+            raise
         return saved
 
     def _order_line(self, restaurant_id: int, cart_line) -> OrderLine:
