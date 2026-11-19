@@ -7,3 +7,4 @@ class Restaurant(BaseModel):
     cuisine: str
     address: str
     rating: float
+    owner_id: int | None = None

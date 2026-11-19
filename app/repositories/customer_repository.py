@@ -1,73 +1,85 @@
-
-import json
-
 from fastapi import Depends
 
 from app.core.config import Settings, get_settings
 from app.models.customer import Customer
+from app.models.customer_requests import CustomerUpdate
+from app.repositories.json_repository import JsonRepository
+from app.services.exceptions import BusinessRuleError
 
 
-class CustomerRepository:
+class CustomerRepository(JsonRepository[Customer]):
     """Reads and writes customer records in JSON storage."""
 
     def __init__(self, settings: Settings):
-        self._path = settings.customers_file
-
-    def _save(self, customers: list[Customer]) -> None:
-        self._path.write_text(
-            json.dumps(
-                [customer.model_dump() for customer in customers],
-                indent=2,
-            ) + "\n",
-            encoding="utf-8",
-        )
-
-    def list_all(self) -> list[Customer]:
-        with open(self._path, encoding="utf-8") as file:
-            return [
-                Customer(**row)
-                for row in json.load(file)
-            ]
+        super().__init__(settings.customers_file, Customer)
 
     def get(self, customer_id: int) -> Customer | None:
         return next(
-            (
-                customer
-                for customer in self.list_all()
-                if customer.id == customer_id
-            ),
+            (customer for customer in self.list_all() if customer.id == customer_id),
             None,
         )
 
     def get_by_email(self, email: str) -> Customer | None:
         normalized_email = email.strip().casefold()
-
         return next(
             (
                 customer
                 for customer in self.list_all()
-                if customer.email.strip().casefold()
-                == normalized_email
+                if customer.email.strip().casefold() == normalized_email
             ),
             None,
         )
 
     def create(self, customer: Customer) -> Customer:
         customers = self.list_all()
-
-        next_id = max(
-            (customer.id for customer in customers),
-            default=0,
-        ) + 1
+        if self.get_by_email(customer.email) is not None:
+            raise BusinessRuleError("A customer with this email already exists")
 
         new_customer = customer.model_copy(
-            update={"id": next_id}
+            update={"id": self._next_id([item.id for item in customers])}
         )
-
         customers.append(new_customer)
         self._save(customers)
-
         return new_customer
+
+    def update(
+        self,
+        customer_id: int,
+        request: CustomerUpdate,
+    ) -> Customer | None:
+        customers = self.list_all()
+        for index, customer in enumerate(customers):
+            if customer.id != customer_id:
+                continue
+
+            updated_data = customer.model_dump()
+            changes = request.model_dump(exclude_unset=True)
+            new_email = changes.get("email")
+            if new_email and new_email.casefold() != customer.email.casefold():
+                existing = self.get_by_email(new_email)
+                if existing is not None and existing.id != customer_id:
+                    raise BusinessRuleError(
+                        "A customer with this email already exists"
+                    )
+
+            updated_data.update(changes)
+            updated_customer = Customer(**updated_data)
+            customers[index] = updated_customer
+            self._save(customers)
+            return updated_customer
+        return None
+
+    def deactivate(self, customer_id: int) -> Customer | None:
+        customers = self.list_all()
+        for index, customer in enumerate(customers):
+            if customer.id == customer_id:
+                updated_customer = customer.model_copy(
+                    update={"is_active": False}
+                )
+                customers[index] = updated_customer
+                self._save(customers)
+                return updated_customer
+        return None
 
 
 def get_customer_repository(
