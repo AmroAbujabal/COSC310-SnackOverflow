@@ -48,5 +48,11 @@ team integration decisions.
 - `tests/test_cart.py::test_cart_requires_real_authentication`
 - `tests/test_cart.py::test_cart_openapi_documents_contract`
 
-Full regression suite: 125 passed. Peer review, PR/issue links and lab receipt approval
+PR #44 integration follow-up: the new default menu filtering from PR #43 initially
+caused both disabled-item cart regression cases to fail. Cart display now explicitly
+requests `get_menu(..., include_unavailable=True)` while insertion and quantity changes
+still use `get_orderable_item`. The regression test verifies customer menu APIs hide
+the item and authenticated GET /cart still returns the existing line with orderable=false.
+
+Full regression suite after integration: 153 passed. Peer review, PR/issue links and lab receipt approval
 are pending the student's/team's own GitHub and lab workflow.

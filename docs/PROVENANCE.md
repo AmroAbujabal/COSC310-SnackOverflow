@@ -196,13 +196,13 @@ Each team member adds their own entries in the same PR as the work they describe
 ## Entry 16 — M2 Menu Availability
 
 - **Student(s):** Al-Munther Bahanshal
-- **Artifact:** `app/models/menu_item.py`, `app/models/menu_item_requests.py`, `app/routes/menus.py`, `app/frontend/management.html`, `app/frontend/management.js`, `app/frontend/app.js`, `tests/test_menu_writes.py`
+- **Artifact:** `app/models/menu_item.py`, `app/models/menu_item_requests.py`, `app/routes/menus.py`, `app/services/menu_services.py`, `app/frontend/management.html`, `app/frontend/management.js`, `app/frontend/app.js`, `tests/test_menu_writes.py`, `tests/test_menu_routes.py`
 - **Label:** AI-GENERATED
 - **AI tool:** ChatGPT / Codex (OpenAI)
 - **Purpose:** Implement menu-item availability using the existing route → service → repository → JSON architecture, with management controls and customer-visible status.
-- **Influence:** AI generated the availability/deactivation model and request fields, API response schemas, management checkbox, management status labels and filtering unavailable/inactive items from customer browsing, and regression tests. Existing service and repository logic was reused. Reapplied these changes on upstream main (ae4771d), preserving its authentication foundation and DomainError handling. Student review and demonstration are pending.
-- **Validation:** Codex ran `.\.venv\Scripts\python.exe -m pytest -q` with cache disabled and a temporary test directory; all 125 tests passed after integration with upstream main (ae4771d). Tests cover availability defaults, creation, toggling, persistence through a fresh repository, preservation of other fields, invalid values (422), and unknown or mismatched restaurant/item IDs (404). Both frontend scripts passed `node --check`; a simulated DOM check verified checkbox state, boolean PATCH payload, form reset, and status labels. Browser demonstration by the student is pending.
-- **PR:** Pending (local feature branch; not pushed and no PR created).
+- **Influence:** AI generated the availability/deactivation model and request fields, API response schemas, management checkbox, management status labels and filtering unavailable/inactive items from customer browsing, and regression tests. Existing service and repository logic was reused. Reapplied these changes on upstream main (ae4771d), preserving its authentication foundation and DomainError handling. Following Amro's review on PR #43, AI revised customer menu reads to filter unavailable/inactive items in MenuService, added an explicit include_unavailable query for management, removed the redundant customer status label, consolidated exception imports, and added filtering/deactivation regression tests. Human re-review and demonstration are pending.
+- **Validation:** Initial menu-only export passed 97 tests. After the PR #43 review fixes and local merge-conflict resolution, Codex reran the full menu-branch suite with cache disabled and isolated temporary data: 125 passed. Tests cover default/explicit filtering on both GET endpoints, full management reads, all-hidden menus, non-mutating service filtering, shared orderability 404/409 behavior, active-state creation/persistence/restoration, strict boolean validation, and OpenAPI query documentation. Both frontend scripts passed `node --check`. Human browser demonstration remains pending.
+- **PR:** #43
 
 ---
 
@@ -213,9 +213,9 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Label:** AI-GENERATED
 - **AI tool:** ChatGPT / Codex (OpenAI)
 - **Purpose:** Implement Al-Munther's authenticated cart backend and centralize current menu-item orderability checks for cart and future checkout integration.
-- **Influence:** AI generated the cart models, JSON repository, service, API routes, shared MenuService.get_orderable_item helper, focused config/router registration, isolated tests, README API documentation and proposed decision receipt. Used the existing customer/auth foundation and DomainError handler. Checkout, customer/login endpoints and cart frontend remain assigned to teammates; student review and human peer review are pending.
-- **Validation:** Codex ran the full pytest suite with cache disabled and isolated temporary data; all 125 tests passed. Evidence covers Customer → Menu → Cart integration with real JWT authentication, service business rules, current-price totals, cart ownership, inactive customers, quantity validation, persistence/reload, concurrent cart updates, rollback after save failure, and API error documentation. Regression tests verify items disabled after insertion remain removable while additions/quantity changes fail. The complete checkout/order workflow and human browser demonstration remain pending team integration.
-- **PR:** Pending (local feature branch; not pushed and no PR created).
+- **Influence:** AI generated the cart models, JSON repository, service, API routes, shared MenuService.get_orderable_item helper, focused config/router registration, isolated tests, README API documentation and proposed decision receipt. Used the existing customer/auth foundation and DomainError handler. Checkout, customer/login endpoints and cart frontend remain assigned to teammates; student review and human peer review are pending. After PR #43 introduced default customer-menu filtering, AI updated cart display to explicitly request the complete catalog, preserving disabled lines for removal without weakening add/update orderability checks.
+- **Validation:** Codex ran the full pytest suite with cache disabled and isolated temporary data; the original suite passed 125 tests. After merging PR #43 review fixes locally, the combined suite passed 153 tests. Before the compatibility fix, both disabled-item regression cases failed; after cart display requested include_unavailable=True, both passed, including new authenticated API assertions that browsing hides disabled items while GET /cart retains them with orderable=false. Evidence covers Customer → Menu → Cart integration with real JWT authentication, service business rules, current-price totals, cart ownership, inactive customers, quantity validation, persistence/reload, concurrent cart updates, rollback after save failure, and API error documentation. Regression tests verify items disabled after insertion remain removable while additions/quantity changes fail. The complete checkout/order workflow and human browser demonstration remain pending team integration.
+- **PR:** #44
 
 ---
 
@@ -228,4 +228,17 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Purpose:** Add representative menu items for the two restaurants that had no sample menu, as requested for local testing and demonstration.
 - **Influence:** AI supplied six sample dish names and prices and explicit available/active flags, preserving the original two items and their IDs. An empty menu remains a valid application state.
 - **Validation:** Validated the JSON using Menu models, checked unique item IDs and restaurant relationships, and reran the full isolated pytest suite (125 passed).
-    - **PR:** Pending (local feature branch; not pushed and no PR created).
+- **PR:** #43
+
+---
+
+## Entry 19 — Decision Receipt M2.3 (domain errors)
+
+- Student(s): Amro
+- Artifact: docs/decision-receipt-m2-3-domain-errors.md, docs/decision-receipt-404.md
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Record the one-hierarchy, one-handler error design from PR #40 as a Decision Receipt, and mark receipt-404 accepted and partly superseded.
+- Influence: AI drafted the receipt from the merged code, tests and the team's 2026-11-01 decisions. I checked the reasoning and the options against what we discussed.
+- Validation: Checked every cited file and test exists on main. Ran the cited tests (14 passed).
+- PR: #42

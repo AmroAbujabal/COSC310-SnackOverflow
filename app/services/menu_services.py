@@ -4,8 +4,9 @@ from app.models.menu_item import MenuItem
 from app.models.menu_item_requests import MenuItemCreate, MenuItemUpdate
 from app.repositories.menu_repository import MenuRepository
 from app.repositories.restaurant_repository import RestaurantRepository
-from app.services.exceptions import BusinessRuleError
-from app.services.exceptions import (RestaurantNotFoundError, MenuItemNotFoundError, MenuNotFoundError,)
+from app.services.exceptions import (
+    BusinessRuleError, RestaurantNotFoundError, MenuItemNotFoundError, MenuNotFoundError,
+)
 
 class MenuService:
     def __init__(
@@ -19,7 +20,8 @@ class MenuService:
     def list_menus(self) -> list[Menu]:
         return self._repo.list_all()
 
-    def get_menu(self, restaurant_id: int) -> Menu:
+    def get_menu(self, restaurant_id: int, *, include_unavailable: bool = False) -> Menu:
+        """Customer reads hide unavailable/inactive items; management can request all."""
         if self._restaurant_repo.get(restaurant_id) is None:
             raise RestaurantNotFoundError(restaurant_id)
 
@@ -28,11 +30,15 @@ class MenuService:
         if menu is None:
             raise MenuNotFoundError(restaurant_id)
 
-        return menu
+        if include_unavailable:
+            return menu
+        return menu.model_copy(update={
+            "items": [item for item in menu.items if item.available and item.active],
+        })
 
     def get_orderable_item(self, restaurant_id: int, item_id: int) -> MenuItem:
         """Shared cart/checkout validation; always reloads current catalog state."""
-        menu = self.get_menu(restaurant_id)
+        menu = self.get_menu(restaurant_id, include_unavailable=True)
         item = next((i for i in menu.items if i.item_id == item_id), None)
         if item is None:
             raise MenuItemNotFoundError(restaurant_id, item_id)

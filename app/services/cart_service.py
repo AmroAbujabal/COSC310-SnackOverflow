@@ -31,7 +31,10 @@ class CartService:
     def _view(self, cart: Cart) -> CartView:
         lines = []
         subtotal = Decimal("0.00")
-        menu = self._menus.get_menu(cart.restaurant_id) if cart.items else None
+        # Retain disabled lines for display/removal; mutations still use get_orderable_item.
+        menu = self._menus.get_menu(
+            cart.restaurant_id, include_unavailable=True,
+        ) if cart.items else None
         for line in cart.items:
             item = next((i for i in menu.items if i.item_id == line.item_id), None)
             if item is None:

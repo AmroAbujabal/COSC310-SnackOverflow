@@ -175,6 +175,17 @@ def test_regression_item_disabled_after_add_can_be_removed(cart_context, cart_cl
     add(service)
     MenuRepository(settings).update_item(1, 1, MenuItemUpdate(**{field: False}))
     assert service.get_or_create_active(1).items[0].orderable is False
+    # Customer browsing hides disabled items, but an existing cart must stay readable.
+    for endpoint in ("/restaurants/1/menu", "/restaurants/1/menu/items"):
+        response = cart_client.get(endpoint)
+        assert response.status_code == 200
+        items = response.json()["items"] if endpoint.endswith("/menu") else response.json()
+        assert 1 not in [item["item_id"] for item in items]
+    response = cart_client.get("/cart")
+    assert response.status_code == 200
+    assert response.json()["items"][0]["item_id"] == 1
+    assert response.json()["items"][0]["orderable"] is False
+    assert response.json()["total"] == 0.1
     before = settings.carts_file.read_bytes()
     for action in (lambda: add(service), lambda: service.update_quantity(1, 1, CartQuantityUpdate(quantity=2))):
         with pytest.raises(BusinessRuleError):

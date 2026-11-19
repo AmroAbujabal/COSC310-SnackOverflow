@@ -1,6 +1,6 @@
 # Decision Receipt: one shared "not found" error
 
-- Status: Proposed (team to confirm at the next meeting)
+- Status: Accepted (confirmed in #31 and #34). Partly superseded by `docs/decision-receipt-m2-3-domain-errors.md` (one handler for all domain errors).
 - Owner: Amro
 - Date: 2026-10-14
 - Related: FR5, US 1.3, PR #10
@@ -31,7 +31,7 @@ Option 2.
 ## Consequences
 
 - Menu and update routes call `get_restaurant()` (or raise `RestaurantNotFoundError` themselves) instead of writing their own 404.
-- A new kind of "not found" (e.g. a menu item) gets its own error class and its own handler in `app/main.py`, following the same pattern.
+- ~~A new kind of "not found" (e.g. a menu item) gets its own error class and its own handler in `app/main.py`, following the same pattern.~~ Superseded by Receipt M2.3: a new error class subclasses `NotFoundError` and the one `DomainError` handler maps it to 404.
 - A non-integer id is still rejected by FastAPI with 422 before the service runs.
 
 ## Evidence
