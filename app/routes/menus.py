@@ -1,6 +1,7 @@
-
 from fastapi import APIRouter, Depends, Path, status
 
+from app.dependencies.auth import require_role
+from app.models.customer import Customer
 from app.models.menu import Menu
 from app.models.menu_item import MenuItem
 from app.models.menu_item_requests import MenuItemCreate, MenuItemUpdate
@@ -68,6 +69,7 @@ def add_menu_item(
     restaurant_repo: RestaurantRepository = Depends(
         get_restaurant_repository
     ),
+    _current_user: Customer = Depends(require_role("owner", "admin")),
 ):
     service = build_service(repo, restaurant_repo)
     return service.add_menu_item(restaurant_id, request)
@@ -90,6 +92,7 @@ def update_menu_item(
     restaurant_repo: RestaurantRepository = Depends(
         get_restaurant_repository
     ),
+    _current_user: Customer = Depends(require_role("owner", "admin")),
 ):
     service = build_service(repo, restaurant_repo)
     return service.update_menu_item(

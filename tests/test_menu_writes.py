@@ -1,13 +1,12 @@
 
 import json
-
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 from app.core.config import Settings, get_settings
 from app.main import app
 from app.models.menu_item_requests import MenuItemCreate
-
+from app.core.security import create_access_token
 
 @pytest.fixture
 def menu_write_client(tmp_path):
@@ -48,22 +47,42 @@ def menu_write_client(tmp_path):
         }
     ]
 
+    owner = [
+        {
+            "id": 1,
+            "name": "Test Owner",
+            "email": "owner@example.com",
+            "password_hash": "not-used-by-token-tests",
+            "address": "123 Main Street",
+            "role": "owner",
+            "is_active": True,
+        }
+    ]
+
     (tmp_path / "restaurants.json").write_text(
         json.dumps(restaurants), encoding="utf-8"
     )
     (tmp_path / "menus.json").write_text(
         json.dumps(menus), encoding="utf-8"
     )
-
-    app.dependency_overrides[get_settings] = (
-        lambda: Settings(data_dir=tmp_path)
+    (tmp_path / "customers.json").write_text(
+        json.dumps(owner), encoding="utf-8"
     )
 
+    settings = Settings(data_dir=tmp_path)
+    token = create_access_token(1, settings)
+
+    app.dependency_overrides[get_settings] = lambda: settings
+
     try:
-        with TestClient(app, raise_server_exceptions=False) as test_client:
+        with TestClient(
+            app,
+            raise_server_exceptions=False,
+            headers={"Authorization": f"Bearer {token}"},
+        ) as test_client:
             yield test_client
     finally:
-        app.dependency_overrides.pop(get_settings, None)
+        app.dependency_overrides.clear()
 
 
 def test_add_menu_item(menu_write_client, tmp_path):
