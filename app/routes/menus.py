@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, Depends, Path, Query, status
 
 from app.models.menu import Menu
 from app.models.menu_item import MenuItem
@@ -32,10 +32,16 @@ def build_service(
 )
 def get_menu(
     restaurant_id: int,
+    include_unavailable: bool = Query(
+        default=False,
+        description="Include unavailable and deactivated items for management; customer reads hide them by default.",
+    ),
     repo: MenuRepository = Depends(get_menu_repository),
     restaurant_repo: RestaurantRepository = Depends(get_restaurant_repository),
 ):
-    return build_service(repo, restaurant_repo).get_menu(restaurant_id)
+    return build_service(repo, restaurant_repo).get_menu(
+        restaurant_id, include_unavailable=include_unavailable,
+    )
 
 
 @router.get(
@@ -45,15 +51,22 @@ def get_menu(
 )
 def get_menu_items(
     restaurant_id: int,
+    include_unavailable: bool = Query(
+        default=False,
+        description="Include unavailable and deactivated items for management; customer reads hide them by default.",
+    ),
     repo: MenuRepository = Depends(get_menu_repository),
     restaurant_repo: RestaurantRepository = Depends(get_restaurant_repository),
 ):
-    return build_service(repo, restaurant_repo).get_menu(restaurant_id).items
+    return build_service(repo, restaurant_repo).get_menu(
+        restaurant_id, include_unavailable=include_unavailable,
+    ).items
 
 
 @router.post(
     "/restaurants/{restaurant_id}/menu/items",
     status_code=201,
+    response_model=MenuItem,
     responses={
         404: {
             "model": ErrorResponse,
@@ -75,6 +88,7 @@ def add_menu_item(
 
 @router.patch(
     "/restaurants/{restaurant_id}/menu/items/{item_id}",
+    response_model=MenuItem,
     responses={
         404: {
             "model": ErrorResponse,

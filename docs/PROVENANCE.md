@@ -191,6 +191,33 @@ Each team member adds their own entries in the same PR as the work they describe
 - Validation: Ran `python -m pytest -q` (76 passed). Checked that the 404 messages for an unknown restaurant and a missing menu are unchanged.
 - PR: #40
 
+---
+
+## Entry 16 — M2 Menu Availability
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `app/models/menu_item.py`, `app/models/menu_item_requests.py`, `app/routes/menus.py`, `app/services/menu_services.py`, `app/frontend/management.html`, `app/frontend/management.js`, `app/frontend/app.js`, `tests/test_menu_writes.py`, `tests/test_menu_routes.py`
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT / Codex (OpenAI)
+- **Purpose:** Implement menu-item availability using the existing route → service → repository → JSON architecture, with management controls and customer-visible status.
+- **Influence:** AI generated the availability/deactivation model and request fields, API response schemas, management checkbox, management status labels and filtering unavailable/inactive items from customer browsing, and regression tests. Existing service and repository logic was reused. Reapplied these changes on upstream main (ae4771d), preserving its authentication foundation and DomainError handling. Following Amro's review on PR #43, AI revised customer menu reads to filter unavailable/inactive items in MenuService, added an explicit include_unavailable query for management, removed the redundant customer status label, consolidated exception imports, and added filtering/deactivation regression tests. Human re-review and demonstration are pending.
+- **Validation:** Initial menu-only export passed 97 tests. After the PR #43 review fixes and local merge-conflict resolution, Codex reran the full menu-branch suite with cache disabled and isolated temporary data: 125 passed. Tests cover default/explicit filtering on both GET endpoints, full management reads, all-hidden menus, non-mutating service filtering, shared orderability 404/409 behavior, active-state creation/persistence/restoration, strict boolean validation, and OpenAPI query documentation. Both frontend scripts passed `node --check`. Human browser demonstration remains pending.
+- **PR:** #43
+
+
+## Entry 18 — Representative Menu Data
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `data/menus.json`
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT / Codex (OpenAI)
+- **Purpose:** Add representative menu items for the two restaurants that had no sample menu, as requested for local testing and demonstration.
+- **Influence:** AI supplied six sample dish names and prices and explicit available/active flags, preserving the original two items and their IDs. An empty menu remains a valid application state.
+- **Validation:** Validated the JSON using Menu models, checked unique item IDs and restaurant relationships, and reran the full isolated pytest suite (125 passed).
+- **PR:** #43
+
+---
+
 ## Entry 19 — Decision Receipt M2.3 (domain errors)
 
 - Student(s): Amro

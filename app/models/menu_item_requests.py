@@ -1,5 +1,5 @@
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, model_validator
 
 
 class MenuItemCreate(BaseModel):
@@ -7,6 +7,8 @@ class MenuItemCreate(BaseModel):
     
     name: str = Field(min_length=1)
     price: float = Field(gt=0, allow_inf_nan=False)
+    available: StrictBool = True
+    active: StrictBool = True
 
     @field_validator("name")
     @classmethod
@@ -22,6 +24,8 @@ class MenuItemUpdate(BaseModel):
 
     name: str | None = Field(default=None, min_length=1)
     price: float | None = Field(default=None, gt=0, allow_inf_nan=False)
+    available: StrictBool | None = None
+    active: StrictBool | None = None
 
     @field_validator("name")
     @classmethod

@@ -78,6 +78,8 @@ def test_add_menu_item(menu_write_client, tmp_path):
         "restaurant_id": 1,
         "name": "Vegetable Noodles",
         "price": 12.50,
+        "available": True,
+        "active": True,
     }
 
     saved_menus = json.loads(
@@ -141,6 +143,8 @@ def test_update_menu_item_preserves_unmodified_fields(menu_write_client):
         "restaurant_id": 1,
         "name": "Butter Chicken",
         "price": 17.25,
+        "available": True,
+        "active": True,
     }
 
 
@@ -185,3 +189,92 @@ def test_add_menu_item_rejects_infinite_price(menu_write_client):
             '{"name":"Noodles","price":1e400}'
         )
 
+
+
+@pytest.mark.parametrize("available", [False, True])
+def test_create_menu_item_with_availability(menu_write_client, available):
+    response = menu_write_client.post(
+        "/restaurants/1/menu/items",
+        json={"name": "Soup", "price": 5.50, "available": available},
+    )
+    assert response.status_code == 201
+    item = response.json()
+    assert item["available"] is available
+    saved = menu_write_client.get("/restaurants/1/menu/items?include_unavailable=true").json()
+    assert next(i for i in saved if i["item_id"] == item["item_id"])["available"] is available
+
+
+def test_availability_toggle_persists_and_preserves_other_fields(menu_write_client, tmp_path):
+    from app.repositories.menu_repository import MenuRepository
+
+    original = menu_write_client.get("/restaurants/1/menu/items").json()
+    assert all(item["available"] is True for item in original)  # Legacy JSON defaults.
+    url = "/restaurants/1/menu/items/1"
+    response = menu_write_client.patch(url, json={"available": False})
+    assert response.status_code == 200
+    assert response.json() == {**original[0], "available": False}
+    menu = menu_write_client.get("/restaurants/1/menu?include_unavailable=true").json()
+    assert menu["items"][0]["available"] is False
+    assert menu["items"][1] == original[1]
+    # A fresh repository reads the persisted state, without an in-memory cache.
+    repo = MenuRepository(Settings(data_dir=tmp_path))
+    assert repo.get(1).items[0].available is False
+    menu_write_client.patch(url, json={"price": 16.50})
+    assert repo.get(1).items[0].available is False
+    response = menu_write_client.patch(url, json={"available": True})
+    assert response.status_code == 200
+    assert repo.get(1).items[0].available is True
+    assert repo.get(1).items[0].price == 16.50
+
+
+@pytest.mark.parametrize("field", ["available", "active"])
+@pytest.mark.parametrize("invalid", [None, "false", "yes", 0, 1, [], {}])
+@pytest.mark.parametrize("method", ["post", "patch"])
+def test_availability_rejects_non_boolean_without_writing(menu_write_client, tmp_path, invalid, method, field):
+    path = tmp_path / "menus.json"
+    before = path.read_bytes()
+    url = "/restaurants/1/menu/items"
+    payload = {field: invalid}
+    if method == "post":
+        payload.update(name="Soup", price=5.50)
+    else:
+        url += "/1"
+    response = getattr(menu_write_client, method)(url, json=payload)
+    assert response.status_code == 422
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("restaurant_id,item_id", [(999, 1), (1, 999), (2, 1)])
+def test_availability_update_missing_or_wrong_restaurant(menu_write_client, tmp_path, restaurant_id, item_id):
+    path = tmp_path / "menus.json"
+    before = path.read_bytes()
+    response = menu_write_client.patch(
+        f"/restaurants/{restaurant_id}/menu/items/{item_id}",
+        json={"available": False},
+    )
+    assert response.status_code == 404
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("active", [True, False])
+def test_create_active_state_persists(menu_write_client, tmp_path, active):
+    response = menu_write_client.post("/restaurants/1/menu/items", json={"name": "Soup", "price": 5, "active": active})
+    assert response.status_code == 201
+    assert response.json()["active"] is active
+    stored = json.loads((tmp_path / "menus.json").read_text(encoding="utf-8"))
+    assert stored[0]["items"][-1]["active"] is active
+
+
+def test_deactivate_hide_and_restore_item(menu_write_client, tmp_path):
+    original = menu_write_client.get("/restaurants/1/menu/items").json()[0]
+    url = "/restaurants/1/menu/items/1"
+    response = menu_write_client.patch(url, json={"active": False})
+    assert response.status_code == 200
+    assert response.json() == {**original, "active": False}
+    assert [i["item_id"] for i in menu_write_client.get("/restaurants/1/menu/items").json()] == [2]
+    management = menu_write_client.get("/restaurants/1/menu/items?include_unavailable=true").json()
+    assert management[0]["active"] is False
+    stored = json.loads((tmp_path / "menus.json").read_text(encoding="utf-8"))
+    assert stored[0]["items"][0]["active"] is False
+    assert menu_write_client.patch(url, json={"active": True}).status_code == 200
+    assert menu_write_client.get("/restaurants/1/menu/items").json()[0] == original
