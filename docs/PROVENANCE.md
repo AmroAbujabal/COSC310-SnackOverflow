@@ -204,6 +204,20 @@ Each team member adds their own entries in the same PR as the work they describe
 - **Validation:** Initial menu-only export passed 97 tests. After the PR #43 review fixes and local merge-conflict resolution, Codex reran the full menu-branch suite with cache disabled and isolated temporary data: 125 passed. Tests cover default/explicit filtering on both GET endpoints, full management reads, all-hidden menus, non-mutating service filtering, shared orderability 404/409 behavior, active-state creation/persistence/restoration, strict boolean validation, and OpenAPI query documentation. Both frontend scripts passed `node --check`. Human browser demonstration remains pending.
 - **PR:** #43
 
+---
+
+## Entry 17 — Cart and Shared Menu Orderability Validation
+
+- **Student(s):** Al-Munther Bahanshal
+- **Artifact:** `app/models/cart.py`, `app/repositories/cart_repository.py`, `app/services/cart_service.py`, `app/routes/cart.py`, `data/carts.json`, `app/services/menu_services.py`, `app/core/config.py`, `app/main.py`, `tests/test_cart.py`, `README.md`, `docs/decision-receipt-menu-cart-M2.md`
+- **Label:** AI-GENERATED
+- **AI tool:** ChatGPT / Codex (OpenAI)
+- **Purpose:** Implement Al-Munther's authenticated cart backend and centralize current menu-item orderability checks for cart and future checkout integration.
+- **Influence:** AI generated the cart models, JSON repository, service, API routes, shared MenuService.get_orderable_item helper, focused config/router registration, isolated tests, README API documentation and proposed decision receipt. Used the existing customer/auth foundation and DomainError handler. Checkout, customer/login endpoints and cart frontend remain assigned to teammates; student review and human peer review are pending. After PR #43 introduced default customer-menu filtering, AI updated cart display to explicitly request the complete catalog, preserving disabled lines for removal without weakening add/update orderability checks.
+- **Validation:** Codex ran the full pytest suite with cache disabled and isolated temporary data; the original suite passed 125 tests. After merging PR #43 review fixes locally, the combined suite passed 153 tests. Before the compatibility fix, both disabled-item regression cases failed; after cart display requested include_unavailable=True, both passed, including new authenticated API assertions that browsing hides disabled items while GET /cart retains them with orderable=false. Evidence covers Customer → Menu → Cart integration with real JWT authentication, service business rules, current-price totals, cart ownership, inactive customers, quantity validation, persistence/reload, concurrent cart updates, rollback after save failure, and API error documentation. Regression tests verify items disabled after insertion remain removable while additions/quantity changes fail. The complete checkout/order workflow and human browser demonstration remain pending team integration.
+- **PR:** #44
+
+---
 
 ## Entry 18 — Representative Menu Data
 

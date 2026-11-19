@@ -32,6 +32,10 @@ class Settings:
         return self.data_dir / "menus.json"
 
     @property
+    def carts_file(self) -> Path:
+        return self.data_dir / "carts.json"
+
+    @property
     def customers_file(self) -> Path:
         return self.data_dir / "customers.json"
 

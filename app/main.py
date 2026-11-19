@@ -9,6 +9,7 @@ from app.routes.restaurants import router as restaurant_router
 from app.services.exceptions import (BusinessRuleError, DomainError, ForbiddenError, NotFoundError,)
 
 from app.routes.menus import router as menu_router
+from app.routes.cart import router as cart_router
 
 app = FastAPI(title="SnackOverflow API")
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ async def domain_error_handler(request: Request, exc: DomainError):
 
 app.include_router(restaurant_router)
 app.include_router(menu_router)
+app.include_router(cart_router)
 
 frontend_dir = Path(__file__).resolve().parent / "frontend"
 
