@@ -242,3 +242,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: AI drafted the receipt from the merged code, tests and the team's 2026-11-01 decisions. I checked the reasoning and the options against what we discussed.
 - Validation: Checked every cited file and test exists on main. Ran the cited tests (14 passed).
 - PR: #42
+
+---
+
+## Entry 22 — Orders and Checkout
+
+- Student(s): Amro
+- Artifact: app/core/pricing.py, app/models/order.py, app/repositories/order_repository.py, app/services/order_service.py, app/services/checkout_service.py, app/routes/orders.py, app/services/exceptions.py, app/core/config.py, app/main.py, data/orders.json, README.md, tests/conftest.py, tests/test_pricing.py, tests/test_order_models.py, tests/test_order_repository.py, tests/test_order_service.py, tests/test_order_routes.py, tests/test_checkout_service.py, tests/test_checkout_routes.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Turn the active cart into a saved order: order storage, GET /orders and GET /orders/{id} (owner or admin only), and POST /checkout, which re-checks every line through get_orderable_item at the current price before saving and clearing the cart.
+- Influence: AI wrote the code test-first, one step at a time, following the team's 2026-11-01 decisions (orders visible to the owning customer and admins; one DomainError handler). I chose the design, reviewed each step, and walked through every file before pushing. A code review found two race conditions (reused order ids, double-click creating two orders); both were fixed with a lock and an atomic file write, each with a failing test first.
+- Validation: Ran `python -m pytest -q` on top of main after #43 and #44 merged (190 passed). Checkout is tested with fakes and end to end with real JWT tokens, the real cart and menu services, and temporary JSON files, including an item disabled after it was added (409, cart kept) and an empty cart (409).
+- PR: #47
