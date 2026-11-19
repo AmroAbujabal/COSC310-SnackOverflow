@@ -1,7 +1,55 @@
 import json
+import pytest
 
 from app.core.config import Settings
 from app.core.security import create_access_token, hash_password
+
+
+@pytest.mark.parametrize("role", ["owner", "admin"])
+def test_register_rejects_elevated_role(client, data_dir, role):
+    payload = register_payload()
+    payload["role"] = role
+
+    response = client.post("/auth/register", json=payload)
+
+    assert response.status_code == 422
+
+    saved = json.loads(
+        (data_dir / "customers.json").read_text(encoding="utf-8")
+    )
+    assert saved == []
+
+
+def create_admin_and_customer(data_dir):
+    admin = {
+        "id": 1,
+        "name": "Test Admin",
+        "email": "admin@example.com",
+        "password_hash": hash_password("admin-password"),
+        "address": "1 Admin Street",
+        "role": "admin",
+        "is_active": True,
+    }
+
+    customer = {
+        "id": 2,
+        "name": "Another Customer",
+        "email": "another@example.com",
+        "password_hash": hash_password("customer-password"),
+        "address": "2 Customer Street",
+        "role": "customer",
+        "is_active": True,
+    }
+
+    (data_dir / "customers.json").write_text(
+        json.dumps([admin, customer]),
+        encoding="utf-8",
+    )
+
+    settings = Settings(data_dir=data_dir)
+    token = create_access_token(1, settings)
+
+    return {"Authorization": f"Bearer {token}"}
 
 
 def register_payload(email="customer@example.com"):
@@ -62,6 +110,18 @@ def test_login_rejects_incorrect_password(client):
     response = login(client, password="wrong-password")
 
     assert response.status_code == 401
+    assert response.headers["www-authenticate"] == "Bearer"
+
+
+def test_login_rejects_unknown_email(client):
+    response = login(
+        client,
+        email="unknown@example.com",
+        password="wrong-password",
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Incorrect email or password"
     assert response.headers["www-authenticate"] == "Bearer"
 
 
@@ -278,3 +338,41 @@ def test_customer_update_rejects_duplicate_email_with_409(client):
     )
 
     assert response.status_code == 409
+
+
+def test_admin_can_view_another_customer(client, data_dir):
+    headers = create_admin_and_customer(data_dir)
+
+    response = client.get(
+        "/customers/2",
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json()["id"] == 2
+    assert response.json()["email"] == "another@example.com"
+    assert response.json()["role"] == "customer"
+    assert response.json()["is_active"] is True
+
+    # Password hashes must never be exposed.
+    assert "password_hash" not in response.json()
+
+
+def test_admin_can_deactivate_another_customer(client, data_dir):
+    headers = create_admin_and_customer(data_dir)
+
+    response = client.delete(
+        "/customers/2",
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json()["id"] == 2
+    assert response.json()["is_active"] is False
+
+    saved = json.loads(
+        (data_dir / "customers.json").read_text(encoding="utf-8")
+    )
+
+    customer = next(item for item in saved if item["id"] == 2)
+    assert customer["is_active"] is False

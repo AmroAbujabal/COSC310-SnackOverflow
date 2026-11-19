@@ -5,6 +5,13 @@ from app.repositories.customer_repository import CustomerRepository
 from app.services.exceptions import CustomerNotFoundError
 
 
+# Generate one valid Argon2 hash when the application starts.
+# It is used to perform password verification when an email is unknown.
+DUMMY_PASSWORD_HASH = hash_password(
+    "snackoverflow-dummy-password-not-for-login"
+)
+
+
 class CustomerService:
     def __init__(self, repo: CustomerRepository):
         self._repo = repo
@@ -41,12 +48,27 @@ class CustomerService:
             raise CustomerNotFoundError(customer_id)
         return customer
 
-    def authenticate(self, email: str, password: str) -> Customer | None:
+    def authenticate(
+        self,
+        email: str,
+        password: str,
+    ) -> Customer | None:
         customer = self._repo.get_by_email(email)
-        if (
-            customer is None
-            or not customer.is_active
-            or not verify_password(password, customer.password_hash)
-        ):
+
+        # Perform an Argon2 verification even if the email is unknown.
+        if customer is None:
+            verify_password(password, DUMMY_PASSWORD_HASH)
             return None
+
+        # Verify the password before checking account activity.
+        # This avoids skipping the expensive password verification
+        # for inactive accounts.
+        password_valid = verify_password(
+            password,
+            customer.password_hash,
+        )
+
+        if not password_valid or not customer.is_active:
+            return None
+
         return customer

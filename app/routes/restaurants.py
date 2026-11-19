@@ -49,9 +49,12 @@ def restaurants(
 def create_restaurant(
     request: RestaurantCreate,
     repo: RestaurantRepository = Depends(get_restaurant_repository),
-    _current_user: Customer = Depends(require_role("owner", "admin")),
+    current_user: Customer = Depends(require_role("owner", "admin")),
 ):
-    return RestaurantService(repo).create_restaurant(request)
+    return RestaurantService(repo).create_restaurant(
+        request,
+        owner_id=current_user.id,
+    )
 
 
 @router.get(
@@ -92,9 +95,10 @@ def update_restaurant(
     request: RestaurantUpdate,
     restaurant_id: int = Path(description="The restaurant's id"),
     repo: RestaurantRepository = Depends(get_restaurant_repository),
-    _current_user: Customer = Depends(require_role("owner", "admin")),
+    current_user: Customer = Depends(require_role("owner", "admin")),
 ):
     return RestaurantService(repo).update_restaurant(
         restaurant_id,
         request,
+        current_user,
     )

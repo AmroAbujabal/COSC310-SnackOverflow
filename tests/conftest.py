@@ -14,6 +14,7 @@ RESTAURANTS = [
         "cuisine": "Italian",
         "address": "294 Orchid Street",
         "rating": 4.5,
+        "owner_id": 1,
     },
     {
         "id": 2,
@@ -21,6 +22,7 @@ RESTAURANTS = [
         "cuisine": "Japanese",
         "address": "789 Daisy Road",
         "rating": 4.2,
+        "owner_id": 1,
     },
 ]
 

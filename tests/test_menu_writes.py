@@ -17,6 +17,7 @@ def menu_write_client(tmp_path):
             "cuisine": "Indian",
             "address": "123 Main Street",
             "rating": 4.7,
+            "owner_id": 1,
         },
         {
             "id": 2,
@@ -24,6 +25,7 @@ def menu_write_client(tmp_path):
             "cuisine": "Japanese",
             "address": "789 Daisy Road",
             "rating": 4.2,
+            "owner_id": 1,
         },
     ]
 
@@ -202,6 +204,7 @@ def test_update_menu_item_rejects_null_price(menu_write_client):
 
     assert response.status_code == 422
 
+
 def test_add_menu_item_rejects_infinite_price(menu_write_client):
     with pytest.raises(ValidationError):
         MenuItemCreate.model_validate_json(
@@ -297,3 +300,39 @@ def test_deactivate_hide_and_restore_item(menu_write_client, tmp_path):
     assert stored[0]["items"][0]["active"] is False
     assert menu_write_client.patch(url, json={"active": True}).status_code == 200
     assert menu_write_client.get("/restaurants/1/menu/items").json()[0] == original
+
+
+def test_owner_cannot_modify_another_owners_menu(
+    owner_client,
+    data_dir,
+):
+    restaurants_path = data_dir / "restaurants.json"
+
+    restaurants = json.loads(
+        restaurants_path.read_text(encoding="utf-8")
+    )
+
+    # Restaurant 2 belongs to a different owner.
+    restaurants[1]["owner_id"] = 2
+
+    restaurants_path.write_text(
+        json.dumps(restaurants),
+        encoding="utf-8",
+    )
+
+    response = owner_client.post(
+        "/restaurants/2/menu/items",
+        json={
+            "name": "Unauthorized Dish",
+            "price": 10.00,
+        },
+    )
+
+    assert response.status_code == 403
+
+    # Confirm the restaurant still belongs to owner 2.
+    saved = json.loads(
+        restaurants_path.read_text(encoding="utf-8")
+    )
+
+    assert saved[1]["owner_id"] == 2

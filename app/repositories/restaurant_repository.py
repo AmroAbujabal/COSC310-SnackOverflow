@@ -14,18 +14,30 @@ class RestaurantRepository(JsonRepository[Restaurant]):
 
     def get(self, restaurant_id: int) -> Restaurant | None:
         return next(
-            (restaurant for restaurant in self.list_all() if restaurant.id == restaurant_id),
+            (
+                restaurant
+                for restaurant in self.list_all()
+                if restaurant.id == restaurant_id
+            ),
             None,
         )
 
-    def create(self, request: RestaurantCreate) -> Restaurant:
+    def create(
+        self,
+        request: RestaurantCreate,
+        owner_id: int,
+    ) -> Restaurant:
         restaurants = self.list_all()
+
         restaurant = Restaurant(
             id=self._next_id([item.id for item in restaurants]),
+            owner_id=owner_id,
             **request.model_dump(),
         )
+
         restaurants.append(restaurant)
         self._save(restaurants)
+
         return restaurant
 
     def update(
@@ -34,14 +46,20 @@ class RestaurantRepository(JsonRepository[Restaurant]):
         request: RestaurantUpdate,
     ) -> Restaurant | None:
         restaurants = self.list_all()
+
         for index, restaurant in enumerate(restaurants):
             if restaurant.id == restaurant_id:
                 updated_data = restaurant.model_dump()
-                updated_data.update(request.model_dump(exclude_unset=True))
+                updated_data.update(
+                    request.model_dump(exclude_unset=True)
+                )
+
                 updated_restaurant = Restaurant(**updated_data)
                 restaurants[index] = updated_restaurant
                 self._save(restaurants)
+
                 return updated_restaurant
+
         return None
 
 
