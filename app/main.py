@@ -15,6 +15,7 @@ from app.services.exceptions import (
     NotFoundError,
 )
 from app.routes.menus import router as menu_router
+from app.routes.cart import router as cart_router
 
 app = FastAPI(title="SnackOverflow API")
 logger = logging.getLogger(__name__)
@@ -48,6 +49,7 @@ app.include_router(auth_router)
 app.include_router(customer_router)
 app.include_router(restaurant_router)
 app.include_router(menu_router)
+app.include_router(cart_router)
 
 frontend_dir = Path(__file__).resolve().parent / "frontend"
 

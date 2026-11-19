@@ -74,7 +74,12 @@ async function showMenu(restaurant) {
       menuPanel.append(makeElement("p", "menu-empty", "This restaurant has no menu items listed yet."));
       return;
     }
-    items.forEach((item) => {
+    const orderableItems = items.filter((item) => item.available && item.active);
+    if (!orderableItems.length) {
+      menuPanel.append(makeElement("p", "menu-empty", "No items are available right now."));
+      return;
+    }
+    orderableItems.forEach((item) => {
       const row = makeElement("li", "menu-item");
       row.append(makeElement("span", "", item.name), makeElement("span", "menu-price", `$${item.price.toFixed(2)}`));
       list.append(row);

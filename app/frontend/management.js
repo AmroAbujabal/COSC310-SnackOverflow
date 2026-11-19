@@ -20,6 +20,8 @@ const menuSubmit = document.querySelector("#menu-submit");
 const menuCancelEdit = document.querySelector("#menu-cancel-edit");
 const menuItemName = document.querySelector("#menu-item-name");
 const menuItemPrice = document.querySelector("#menu-item-price");
+const menuItemAvailable = document.querySelector("#menu-item-available");
+const menuItemActive = document.querySelector("#menu-item-active");
 
 let restaurants = [];
 let menuItems = [];
@@ -108,7 +110,7 @@ async function loadMenu(restaurant) {
   menuList.replaceChildren();
   setStatus(menuStatus, "Loading menu...");
   try {
-    menuItems = await requestJson(`/restaurants/${restaurant.id}/menu/items`);
+    menuItems = await requestJson(`/restaurants/${restaurant.id}/menu/items?include_unavailable=true`);
     renderMenu();
   } catch (error) {
     if (error.status === 404) {
@@ -129,7 +131,7 @@ function renderMenu() {
   setStatus(menuStatus, "");
   menuItems.forEach((item) => {
     const row = document.createElement("li");
-    row.append(document.createTextNode(`${item.name} | $${item.price.toFixed(2)} `));
+    row.append(document.createTextNode(`${item.name} | $${item.price.toFixed(2)} | ${!item.active ? "Deactivated" : item.available ? "Available" : "Unavailable"} `));
     const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.textContent = "Edit item";
@@ -137,6 +139,8 @@ function renderMenu() {
       editingItemId = item.item_id;
       menuItemName.value = item.name;
       menuItemPrice.value = item.price;
+      menuItemAvailable.checked = item.available;
+      menuItemActive.checked = item.active;
       menuFormHeading.textContent = `Edit menu item #${item.item_id}`;
       menuSubmit.textContent = "Save menu item";
       menuCancelEdit.hidden = false;
@@ -214,6 +218,8 @@ menuForm.addEventListener("submit", async (event) => {
   const payload = {
     name: menuItemName.value.trim(),
     price: Number(menuItemPrice.value),
+    available: menuItemAvailable.checked,
+    active: menuItemActive.checked,
   };
   const url = editingItemId === null
     ? `/restaurants/${restaurant.id}/menu/items`

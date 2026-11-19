@@ -6,13 +6,75 @@
         "item_id": 1,
         "restaurant_id": 1,
         "name": "Butter Chicken",
-        "price": 15.99
+        "price": 15.99,
+        "available": true,
+        "active": true
       },
       {
         "item_id": 2,
         "restaurant_id": 1,
         "name": "Chicken Biryani",
-        "price": 13.99
+        "price": 13.99,
+        "available": true,
+        "active": true
+      }
+    ]
+  },
+  {
+    "restaurant_id": 2,
+    "items": [
+      {
+        "item_id": 3,
+        "restaurant_id": 2,
+        "name": "BBQ Beef Brisket",
+        "price": 18.99,
+        "available": true,
+        "active": true
+      },
+      {
+        "item_id": 4,
+        "restaurant_id": 2,
+        "name": "Pulled Pork Sandwich",
+        "price": 12.99,
+        "available": true,
+        "active": true
+      },
+      {
+        "item_id": 5,
+        "restaurant_id": 2,
+        "name": "Mac and Cheese",
+        "price": 6.99,
+        "available": true,
+        "active": true
+      }
+    ]
+  },
+  {
+    "restaurant_id": 3,
+    "items": [
+      {
+        "item_id": 6,
+        "restaurant_id": 3,
+        "name": "Salmon Roll",
+        "price": 9.99,
+        "available": true,
+        "active": true
+      },
+      {
+        "item_id": 7,
+        "restaurant_id": 3,
+        "name": "California Roll",
+        "price": 8.99,
+        "available": true,
+        "active": true
+      },
+      {
+        "item_id": 8,
+        "restaurant_id": 3,
+        "name": "Vegetable Tempura",
+        "price": 10.99,
+        "available": true,
+        "active": true
       }
     ]
   }

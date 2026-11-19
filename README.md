@@ -94,3 +94,25 @@ pytest.ini
 ## AI use
 
 AI use is recorded in `docs/PROVENANCE.md`, following the course provenance guide.
+
+## M2 Menu Availability and Cart
+
+Menu items support `available` and `active` flags through the existing POST/PATCH
+endpoints. Customer browsing hides unavailable or inactive items.
+
+Authenticated cart operations are documented in `/docs`:
+
+| Method | Path | Operation |
+| --- | --- | --- |
+| GET | `/cart` | Get or create the current customer's active cart and backend totals |
+| POST | `/cart/items` | Add an item using restaurant_id, item_id and quantity |
+| PATCH | `/cart/items/{item_id}` | Replace quantity |
+| DELETE | `/cart/items/{item_id}` | Remove an item |
+| DELETE | `/cart` | Clear the cart |
+
+Send a bearer token from the existing authentication foundation. A cart contains
+items from one restaurant; quantities are integers 1–99. Totals use current menu
+prices. Customer/login endpoints, checkout/orders and the cart frontend remain
+pending team integration.
+
+Design evidence: [shared menu orderability validation](docs/decision-receipt-menu-cart-M2.md).
