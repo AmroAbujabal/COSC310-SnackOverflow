@@ -43,3 +43,19 @@ class CustomerNotFoundError(NotFoundError):
 
     def __init__(self, customer_id: int):
         super().__init__(f"Customer {customer_id} not found")
+
+class OrderNotFoundError(NotFoundError):
+    def __init__(self, order_id: int):
+        super().__init__(f"Order {order_id} not found")
+
+class OrderForbiddenError(ForbiddenError):
+    """The order belongs to another customer and the caller is not an admin."""
+
+    def __init__(self, order_id: int):
+        super().__init__(f"You cannot view order {order_id}")
+
+class EmptyCartError(BusinessRuleError):
+    """The customer's cart has no items."""
+
+    def __init__(self):
+        super().__init__("Your cart is empty")
