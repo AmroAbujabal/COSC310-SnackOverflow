@@ -110,7 +110,7 @@ async function loadMenu(restaurant) {
   menuList.replaceChildren();
   setStatus(menuStatus, "Loading menu...");
   try {
-    menuItems = await requestJson(`/restaurants/${restaurant.id}/menu/items`);
+    menuItems = await requestJson(`/restaurants/${restaurant.id}/menu/items?include_unavailable=true`);
     renderMenu();
   } catch (error) {
     if (error.status === 404) {

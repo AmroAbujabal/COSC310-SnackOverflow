@@ -200,7 +200,7 @@ def test_create_menu_item_with_availability(menu_write_client, available):
     assert response.status_code == 201
     item = response.json()
     assert item["available"] is available
-    saved = menu_write_client.get("/restaurants/1/menu/items").json()
+    saved = menu_write_client.get("/restaurants/1/menu/items?include_unavailable=true").json()
     assert next(i for i in saved if i["item_id"] == item["item_id"])["available"] is available
 
 
@@ -213,7 +213,7 @@ def test_availability_toggle_persists_and_preserves_other_fields(menu_write_clie
     response = menu_write_client.patch(url, json={"available": False})
     assert response.status_code == 200
     assert response.json() == {**original[0], "available": False}
-    menu = menu_write_client.get("/restaurants/1/menu").json()
+    menu = menu_write_client.get("/restaurants/1/menu?include_unavailable=true").json()
     assert menu["items"][0]["available"] is False
     assert menu["items"][1] == original[1]
     # A fresh repository reads the persisted state, without an in-memory cache.
@@ -227,13 +227,14 @@ def test_availability_toggle_persists_and_preserves_other_fields(menu_write_clie
     assert repo.get(1).items[0].price == 16.50
 
 
+@pytest.mark.parametrize("field", ["available", "active"])
 @pytest.mark.parametrize("invalid", [None, "false", "yes", 0, 1, [], {}])
 @pytest.mark.parametrize("method", ["post", "patch"])
-def test_availability_rejects_non_boolean_without_writing(menu_write_client, tmp_path, invalid, method):
+def test_availability_rejects_non_boolean_without_writing(menu_write_client, tmp_path, invalid, method, field):
     path = tmp_path / "menus.json"
     before = path.read_bytes()
     url = "/restaurants/1/menu/items"
-    payload = {"available": invalid}
+    payload = {field: invalid}
     if method == "post":
         payload.update(name="Soup", price=5.50)
     else:
@@ -253,3 +254,27 @@ def test_availability_update_missing_or_wrong_restaurant(menu_write_client, tmp_
     )
     assert response.status_code == 404
     assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("active", [True, False])
+def test_create_active_state_persists(menu_write_client, tmp_path, active):
+    response = menu_write_client.post("/restaurants/1/menu/items", json={"name": "Soup", "price": 5, "active": active})
+    assert response.status_code == 201
+    assert response.json()["active"] is active
+    stored = json.loads((tmp_path / "menus.json").read_text(encoding="utf-8"))
+    assert stored[0]["items"][-1]["active"] is active
+
+
+def test_deactivate_hide_and_restore_item(menu_write_client, tmp_path):
+    original = menu_write_client.get("/restaurants/1/menu/items").json()[0]
+    url = "/restaurants/1/menu/items/1"
+    response = menu_write_client.patch(url, json={"active": False})
+    assert response.status_code == 200
+    assert response.json() == {**original, "active": False}
+    assert [i["item_id"] for i in menu_write_client.get("/restaurants/1/menu/items").json()] == [2]
+    management = menu_write_client.get("/restaurants/1/menu/items?include_unavailable=true").json()
+    assert management[0]["active"] is False
+    stored = json.loads((tmp_path / "menus.json").read_text(encoding="utf-8"))
+    assert stored[0]["items"][0]["active"] is False
+    assert menu_write_client.patch(url, json={"active": True}).status_code == 200
+    assert menu_write_client.get("/restaurants/1/menu/items").json()[0] == original

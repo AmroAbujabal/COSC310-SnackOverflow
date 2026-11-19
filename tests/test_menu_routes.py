@@ -134,3 +134,67 @@ def test_service_raises_menu_not_found(data_dir):
 
     with pytest.raises(MenuNotFoundError):
         service.get_menu(2)
+
+@pytest.mark.parametrize("endpoint", ["/menu", "/menu/items"])
+@pytest.mark.parametrize("query,expected", [("", [1, 2]), ("?include_unavailable=false", [1, 2]),
+                                            ("?include_unavailable=true", [1, 2, 3, 4, 5])])
+def test_menu_customer_filter_and_management_view(client, tmp_path, endpoint, query, expected):
+    path = tmp_path / "menus.json"
+    menus = json.loads(path.read_text(encoding="utf-8"))
+    for item_id, available, active in [(3, False, True), (4, True, False), (5, False, False)]:
+        menus[0]["items"].append(dict(item_id=item_id, restaurant_id=1, name="Hidden", price=5,
+                                       available=available, active=active))
+    path.write_text(json.dumps(menus), encoding="utf-8")
+    before = path.read_bytes()
+    response = client.get(f"/restaurants/1{endpoint}{query}")
+    assert response.status_code == 200
+    items = response.json()["items"] if endpoint == "/menu" else response.json()
+    assert [item["item_id"] for item in items] == expected
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("endpoint", ["/menu", "/menu/items"])
+def test_all_hidden_items_return_empty_customer_menu(client, tmp_path, endpoint):
+    path = tmp_path / "menus.json"
+    menus = json.loads(path.read_text(encoding="utf-8"))
+    for item in menus[0]["items"]:
+        item["active"] = False
+    path.write_text(json.dumps(menus), encoding="utf-8")
+    response = client.get(f"/restaurants/1{endpoint}")
+    assert response.status_code == 200
+    assert (response.json()["items"] if endpoint == "/menu" else response.json()) == []
+
+
+@pytest.mark.parametrize("endpoint", ["/menu", "/menu/items"])
+def test_menu_documents_filter_and_rejects_invalid_flag(client, endpoint):
+    path = f"/restaurants/{{restaurant_id}}{endpoint}"
+    operation = client.get("/openapi.json").json()["paths"][path]["get"]
+    flag = next(p for p in operation["parameters"] if p["name"] == "include_unavailable")
+    assert flag["schema"]["default"] is False
+    assert flag["description"]
+    assert client.get(f"/restaurants/1{endpoint}?include_unavailable=invalid").status_code == 422
+
+
+def test_service_filter_does_not_mutate_catalog_and_orderability_still_rejects(client, tmp_path):
+    from app.models.menu import Menu
+    from app.services.exceptions import BusinessRuleError, MenuItemNotFoundError
+    from unittest.mock import Mock
+
+    catalog = Menu(restaurant_id=1, items=[
+        dict(item_id=1, restaurant_id=1, name="Soup", price=5),
+        dict(item_id=2, restaurant_id=1, name="Sold out", price=6, available=False),
+        dict(item_id=3, restaurant_id=1, name="Retired", price=7, active=False),
+    ])
+    repo = Mock()
+    repo.get.return_value = catalog
+    restaurants = Mock()
+    service = MenuService(repo, restaurants)
+    assert [i.item_id for i in service.get_menu(1).items] == [1]
+    assert len(catalog.items) == 3
+    assert len(service.get_menu(1, include_unavailable=True).items) == 3
+    assert service.get_orderable_item(1, 1).name == "Soup"
+    for item_id in (2, 3):
+        with pytest.raises(BusinessRuleError):
+            service.get_orderable_item(1, item_id)
+    with pytest.raises(MenuItemNotFoundError):
+        service.get_orderable_item(1, 999)
