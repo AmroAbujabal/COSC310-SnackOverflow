@@ -277,3 +277,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: AI wrote the code test-first, one step at a time, following the team's 2026-11-01 decisions (orders visible to the owning customer and admins; one DomainError handler). I chose the design, reviewed each step, and walked through every file before pushing. A code review found two race conditions (reused order ids, double-click creating two orders); both were fixed with a lock and an atomic file write, each with a failing test first.
 - Validation: Ran `python -m pytest -q` on top of main after #43 and #44 merged (190 passed). Checkout is tested with fakes and end to end with real JWT tokens, the real cart and menu services, and temporary JSON files, including an item disabled after it was added (409, cart kept) and an empty cart (409).
 - PR: #47
+
+---
+
+## Entry 23 — End-to-End Order Flow Test
+
+- Student(s): Amro
+- Artifact: tests/test_integration_order_flow.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: One integration test of the whole customer journey over HTTP on a copy of the real seed data: register, log in through /auth/login, browse, add to cart, check out, and view the order, plus empty-cart checkout (409), another customer viewing the order (403) and no token (401).
+- Influence: AI wrote the test from the merged auth, cart and order routes. I chose what the journey should cover and checked each assertion against the API.
+- Validation: Ran `python -m pytest -q` (216 passed; tracked data/ files unchanged). Removed the cart clear from checkout on purpose and confirmed the test fails, then restored it.
+- PR: #50
