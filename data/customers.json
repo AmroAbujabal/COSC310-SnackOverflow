@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "id": 1,
+        "name": "SnackOverflow Demo Admin",
+        "email": "admin@snackoverflow.demo",
+        "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$cDCWRGIXhvotXO2bqnSSkA$shkmsYSHz3bFola8FhLyUsAPjDKYWF0OUEDeRaZT73M",
+        "address": "SnackOverflow Demo Office",
+        "role": "admin",
+        "is_active": true
+    },
+    {
+        "id": 2,
+        "name": "SnackOverflow Demo Owner",
+        "email": "owner@snackoverflow.demo",
+        "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$Af7HkBwqosnQGMYJV1NVQQ$37FGrANSw15EDJjP8XyyxjMfc6Cyq5pcLUa8Bs0hMjQ",
+        "address": "SnackOverflow Demo Restaurant",
+        "role": "owner",
+        "is_active": true
+    }
+]
