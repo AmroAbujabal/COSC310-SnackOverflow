@@ -1,9 +1,9 @@
 [
     {
         "id": 1,
-        "name": "Fine india dining",
+        "name": "Fine India Dining",
         "cuisine": "Indian",
-        "address": "453 Berndard Rd",
+        "address": "453 Bernard Rd",
         "rating": 4.7,
         "owner_id": 2
     },

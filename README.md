@@ -1,4 +1,3 @@
-
 # SnackOverflow
 
 Backend API for a food-delivery application, built with FastAPI for COSC 310.
@@ -60,6 +59,9 @@ The restaurant browsing page is at http://127.0.0.1:8000/ and the management fro
 | GET | `/restaurants/{restaurant_id}/menu/items` | The items on a restaurant's menu; same `404`s as above |
 | POST | `/restaurants/{restaurant_id}/menu/items` | Add a menu item |
 | PATCH | `/restaurants/{restaurant_id}/menu/items/{item_id}` | Update a menu item |
+| GET | `/orders` | The logged-in customer's orders; `401` without a token |
+| GET | `/orders/{order_id}` | One order; only its customer or an admin (`403` otherwise), `404` if unknown |
+| POST | `/checkout` | Turn your cart into an order at current prices, then empty the cart; `409` if the cart is empty or an item is unavailable (nothing saved) |
 
 The management front end can create and edit restaurants and create and edit their menu items using these API endpoints.
 
@@ -132,6 +134,6 @@ Authenticated cart operations are documented in `/docs`:
 
 Send a bearer token from the existing authentication foundation. A cart contains items from one restaurant; quantities are integers 1–99. Totals use current menu prices.
 
-Customer/login endpoints, checkout/orders and the cart frontend remain pending team integration.
+The cart frontend remains pending team integration.
 
 Design evidence: [shared menu orderability validation](docs/decision-receipt-menu-cart-M2.md).
