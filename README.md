@@ -41,6 +41,7 @@ uvicorn app.main:app --reload
 ```
 
 The API runs at http://127.0.0.1:8000.
+
 The restaurant browsing page is at http://127.0.0.1:8000/ and the management front end is at http://127.0.0.1:8000/management.
 
 ## API endpoints
@@ -64,6 +65,25 @@ The restaurant browsing page is at http://127.0.0.1:8000/ and the management fro
 
 The management front end can create and edit restaurants and create and edit their menu items using these API endpoints.
 
+## Demo management accounts
+
+The committed JSON seed data includes two local/demo-only accounts so the management page can be demonstrated without manually editing the data files.
+
+Both accounts use Argon2 password hashes in `data/customers.json`. The plaintext passwords below are provided only for local coursework demonstrations. Do not reuse these credentials or use them in a deployed environment.
+
+| Role | Email (login username) | Demo password |
+| --- | --- | --- |
+| Admin | `admin@snackoverflow.demo` | `AdminDemo2026!` |
+| Owner | `owner@snackoverflow.demo` | `OwnerDemo2026!` |
+
+Open http://127.0.0.1:8000/management and sign in with either account.
+
+- The admin can manage every seeded restaurant.
+- The owner account (ID `2`) owns all three seeded restaurants and can manage their details and menu items.
+- Newly registered accounts continue to receive the `customer` role and cannot perform owner/admin management actions.
+
+The demo accounts are stored in the repository's seed JSON files. If you use a separate data directory through `SNACKOVERFLOW_DATA_DIR`, copy the seed files into that directory to make these accounts available.
+
 ## Data
 
 Representative restaurant data is stored in `data/restaurants.json`.
@@ -78,7 +98,7 @@ python -m pytest
 
 ## Repository structure
 
-```
+```text
 app/
   main.py        FastAPI app, registers the routers
   routes/        HTTP endpoints (routes -> services)
@@ -100,8 +120,7 @@ AI use is recorded in `docs/PROVENANCE.md`, following the course provenance guid
 
 ## M2 Menu Availability and Cart
 
-Menu items support `available` and `active` flags through the existing POST/PATCH
-endpoints. Customer browsing hides unavailable or inactive items.
+Menu items support `available` and `active` flags through the existing POST/PATCH endpoints. Customer browsing hides unavailable or inactive items.
 
 Authenticated cart operations are documented in `/docs`:
 
@@ -113,9 +132,8 @@ Authenticated cart operations are documented in `/docs`:
 | DELETE | `/cart/items/{item_id}` | Remove an item |
 | DELETE | `/cart` | Clear the cart |
 
-Send a bearer token from the existing authentication foundation. A cart contains
-items from one restaurant; quantities are integers 1–99. Totals use current menu
-prices. Customer/login endpoints, checkout/orders and the cart frontend remain
-pending team integration.
+Send a bearer token from the existing authentication foundation. A cart contains items from one restaurant; quantities are integers 1–99. Totals use current menu prices.
+
+The cart frontend remains pending team integration.
 
 Design evidence: [shared menu orderability validation](docs/decision-receipt-menu-cart-M2.md).
