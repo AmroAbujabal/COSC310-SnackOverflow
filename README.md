@@ -49,6 +49,9 @@ The restaurant browsing page is at http://127.0.0.1:8000/ and the management fro
 | Method | Path | Description |
 | --- | --- | --- |
 | GET | `/health` | Health check, returns `{"status": "ok"}` |
+| POST | `/auth/register` | Register a customer account |
+| POST | `/auth/login` | Sign in with an email and password to receive a bearer token |
+| GET/PATCH/DELETE | `/customers/me` | View, update, or deactivate the signed-in customer's account |
 | GET | `/restaurants` | List all restaurants (id, name, cuisine, address, rating) |
 | GET | `/restaurants?name=&cuisine=` | Search by part of the name and/or filter by exact cuisine (both ignore case); no match returns `[]` |
 | GET | `/restaurants/{restaurant_id}` | One restaurant's details; `404` with `{"detail": ...}` if the id is unknown |
@@ -59,11 +62,15 @@ The restaurant browsing page is at http://127.0.0.1:8000/ and the management fro
 | GET | `/restaurants/{restaurant_id}/menu/items` | The items on a restaurant's menu; same `404`s as above |
 | POST | `/restaurants/{restaurant_id}/menu/items` | Add a menu item |
 | PATCH | `/restaurants/{restaurant_id}/menu/items/{item_id}` | Update a menu item |
+| GET | `/cart` | Get the signed-in customer's cart |
+| POST | `/cart/items` | Add a menu item to the cart |
+| PATCH | `/cart/items/{item_id}` | Change a cart item's quantity |
+| DELETE | `/cart/items/{item_id}` or `/cart` | Remove an item or clear the cart |
 | GET | `/orders` | The logged-in customer's orders; `401` without a token |
 | GET | `/orders/{order_id}` | One order; only its customer or an admin (`403` otherwise), `404` if unknown |
 | POST | `/checkout` | Turn your cart into an order at current prices, then empty the cart; `409` if the cart is empty or an item is unavailable (nothing saved) |
 
-The management front end can create and edit restaurants and create and edit their menu items using these API endpoints.
+The customer front end supports registration and sign-in, profile management, browsing menus, adding and updating cart items, checkout, and viewing order history and details. The management front end can create and edit restaurants and menu items using these API endpoints.
 
 ## Demo management accounts
 
@@ -132,8 +139,6 @@ Authenticated cart operations are documented in `/docs`:
 | DELETE | `/cart/items/{item_id}` | Remove an item |
 | DELETE | `/cart` | Clear the cart |
 
-Send a bearer token from the existing authentication foundation. A cart contains items from one restaurant; quantities are integers 1–99. Totals use current menu prices.
-
-The cart frontend remains pending team integration.
+The customer front end sends the bearer token received from `/auth/login`. A cart contains items from one restaurant; quantities are integers 1–99. Totals use current menu prices.
 
 Design evidence: [shared menu orderability validation](docs/decision-receipt-menu-cart-M2.md).

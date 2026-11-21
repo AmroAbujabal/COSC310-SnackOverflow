@@ -9,11 +9,75 @@
   <body>
     <header>
       <h1>SnackOverflow</h1>
-      <p>Find a restaurant and view its menu.</p>
+      <p>Find a restaurant, build a cart, and place an order.</p>
       <p><a href="/management">Management front end</a></p>
     </header>
 
     <main>
+      <section aria-labelledby="account-heading">
+        <h2 id="account-heading">Your account</h2>
+        <p id="account-status" role="status" aria-live="polite">
+          Browse restaurants or sign in to order.
+        </p>
+
+        <div id="auth-forms">
+          <form id="login-form">
+            <h3>Sign in</h3>
+            <p>
+              <label for="login-email">Email:</label>
+              <input id="login-email" name="email" type="email" autocomplete="username" required />
+            </p>
+            <p>
+              <label for="login-password">Password:</label>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+            </p>
+            <button type="submit">Sign in</button>
+          </form>
+
+          <form id="register-form">
+            <h3>Create an account</h3>
+            <p>
+              <label for="register-name">Name:</label>
+              <input id="register-name" name="name" autocomplete="name" maxlength="100" required />
+            </p>
+            <p>
+              <label for="register-email">Email:</label>
+              <input id="register-email" name="email" type="email" autocomplete="email" maxlength="254" required />
+            </p>
+            <p>
+              <label for="register-password">Password (at least 8 characters):</label>
+              <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required />
+            </p>
+            <p>
+              <label for="register-address">Address:</label>
+              <input id="register-address" name="address" autocomplete="street-address" maxlength="250" required />
+            </p>
+            <button type="submit">Create account</button>
+          </form>
+        </div>
+
+        <section id="signed-in-panel" hidden aria-labelledby="profile-heading">
+          <h3 id="profile-heading">Profile</h3>
+          <form id="profile-form">
+            <p>
+              <label for="profile-name">Name:</label>
+              <input id="profile-name" name="name" maxlength="100" required />
+            </p>
+            <p>
+              <label for="profile-email">Email:</label>
+              <input id="profile-email" name="email" type="email" maxlength="254" required />
+            </p>
+            <p>
+              <label for="profile-address">Address:</label>
+              <input id="profile-address" name="address" maxlength="250" required />
+            </p>
+            <button type="submit">Save profile</button>
+          </form>
+          <button id="logout-button" type="button">Sign out</button>
+          <button id="deactivate-button" type="button">Deactivate account</button>
+        </section>
+      </section>
+
       <section aria-labelledby="restaurants-heading">
         <h2 id="restaurants-heading">Restaurants <span id="result-count"></span></h2>
         <p>
@@ -23,6 +87,22 @@
         <p id="status" role="status" aria-live="polite">Loading restaurants...</p>
         <ul id="restaurant-grid"></ul>
         <section id="menu-panel" hidden aria-live="polite"></section>
+      </section>
+
+      <section id="cart-section" hidden aria-labelledby="cart-heading">
+        <h2 id="cart-heading">Your cart</h2>
+        <p id="cart-status" role="status" aria-live="polite"></p>
+        <ul id="cart-items"></ul>
+        <p id="cart-total"></p>
+        <button id="checkout-button" type="button">Place order</button>
+        <button id="clear-cart-button" type="button">Clear cart</button>
+      </section>
+
+      <section id="orders-section" hidden aria-labelledby="orders-heading">
+        <h2 id="orders-heading">Your orders</h2>
+        <p id="orders-status" role="status" aria-live="polite"></p>
+        <ul id="orders-list"></ul>
+        <section id="order-detail" hidden aria-live="polite"></section>
       </section>
     </main>
   </body>

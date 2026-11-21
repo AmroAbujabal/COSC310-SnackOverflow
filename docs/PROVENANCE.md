@@ -290,3 +290,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: AI wrote the test from the merged auth, cart and order routes. I chose what the journey should cover and checked each assertion against the API.
 - Validation: Ran `python -m pytest -q` (216 passed; tracked data/ files unchanged). Removed the cart clear from checkout on purpose and confirmed the test fails, then restored it.
 - PR: #50
+
+---
+
+## Entry 24 — Customer Frontend Integration
+
+- Student(s): Project contributor (not identified in this session)
+- Artifact: app/frontend/index.html, app/frontend/app.js, README.md
+- Label: AI-ASSISTED
+- AI tool: Copilot SDK in VS Code
+- Purpose: Integrate customer registration, authentication, profile, cart, checkout, and order endpoints into the browsing frontend.
+- Influence: The AI assistant implemented the frontend against the existing FastAPI contracts and documented the integration. Human review status was not provided.
+- Validation: Ran `python -m pytest -q` (224 passed). Verified in a browser using isolated seed data: account registration/sign-in/profile update/sign-out, menu browsing, add/update cart quantity, checkout, and order history/detail.
+- PR: Pending.
