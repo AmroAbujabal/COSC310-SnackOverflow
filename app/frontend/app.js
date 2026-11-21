@@ -127,7 +127,7 @@ function loadRestaurants() {
       .some((value) => value.toLowerCase().includes(query)),
   );
   renderRestaurants(matches);
-  setStatus(matches.length ? "" : "No restaurant information matches that search.");
+  setStatus(statusMessage, matches.length ? "" : "No restaurant information matches that search.");
 }
 
 function addMenuItemRow(item, restaurant) {
@@ -458,7 +458,7 @@ async function initialize() {
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
     allRestaurants = await response.json();
     renderRestaurants(allRestaurants);
-    setStatus(allRestaurants.length ? "" : "No restaurants available yet.");
+    setStatus(statusMessage, allRestaurants.length ? "" : "No restaurants available yet.");
   } catch (error) {
     setStatus(statusMessage, `Restaurants could not be loaded: ${error.message}`, true);
   }
