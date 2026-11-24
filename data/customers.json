@@ -1,20 +1,29 @@
 [
-    {
-        "id": 1,
-        "name": "SnackOverflow Demo Admin",
-        "email": "admin@snackoverflow.demo",
-        "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$cDCWRGIXhvotXO2bqnSSkA$shkmsYSHz3bFola8FhLyUsAPjDKYWF0OUEDeRaZT73M",
-        "address": "SnackOverflow Demo Office",
-        "role": "admin",
-        "is_active": true
-    },
-    {
-        "id": 2,
-        "name": "SnackOverflow Demo Owner",
-        "email": "owner@snackoverflow.demo",
-        "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$Af7HkBwqosnQGMYJV1NVQQ$37FGrANSw15EDJjP8XyyxjMfc6Cyq5pcLUa8Bs0hMjQ",
-        "address": "SnackOverflow Demo Restaurant",
-        "role": "owner",
-        "is_active": true
-    }
+  {
+    "id": 1,
+    "name": "SnackOverflow Demo Admin",
+    "email": "admin@snackoverflow.demo",
+    "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$cDCWRGIXhvotXO2bqnSSkA$shkmsYSHz3bFola8FhLyUsAPjDKYWF0OUEDeRaZT73M",
+    "address": "SnackOverflow Demo Office",
+    "role": "admin",
+    "is_active": true
+  },
+  {
+    "id": 2,
+    "name": "SnackOverflow Demo Owner",
+    "email": "owner@snackoverflow.demo",
+    "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$Af7HkBwqosnQGMYJV1NVQQ$37FGrANSw15EDJjP8XyyxjMfc6Cyq5pcLUa8Bs0hMjQ",
+    "address": "SnackOverflow Demo Restaurant",
+    "role": "owner",
+    "is_active": true
+  },
+  {
+    "id": 3,
+    "name": "Kenneth",
+    "email": "tandiantokenneth@gmail.com",
+    "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$OpFCxUceUiBgBvv13sfg3Q$bJCilt2sRUvU8va+sdzkCe2C4XybGQToAwIuKjp+O8E",
+    "address": "842 Academy Way",
+    "role": "customer",
+    "is_active": true
+  }
 ]
