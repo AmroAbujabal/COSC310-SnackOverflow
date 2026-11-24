@@ -57,7 +57,9 @@ def get_checkout_service(
 ) -> CheckoutService:
     return CheckoutService(orders, carts, MenuService(menus, restaurants))
 
-
+//“The route only does HTTP: the URL, the 201 and the dependencies. 
+//The body is one line. FastAPI resolves both Depends before it runs.”
+    
 @router.post(
     "/checkout",
     response_model=Order,
