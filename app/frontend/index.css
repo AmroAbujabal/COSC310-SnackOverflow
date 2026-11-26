@@ -1,0 +1,17 @@
+body {
+    background-color:  cyan;
+}
+main {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: blueviolet;
+}
+h1{
+    display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#bear{
+    display: flex;
+  justify-content: flex-end;
+  align-items:end;
+}
