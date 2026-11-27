@@ -40,6 +40,9 @@ class OrderRepository:
     def list_for_customer(self, customer_id: int) -> list[Order]:
         return [order for order in self.list_all() if order.customer_id == customer_id]
 
+    def list_for_restaurant(self, restaurant_id: int) -> list[Order]:
+        return [order for order in self.list_all() if order.restaurant_id == restaurant_id]
+
     def create(self, order: Order) -> Order:
         # Read, pick the next id and save as one step, so two checkouts can't share an id.
         with order_lock:

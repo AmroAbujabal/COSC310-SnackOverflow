@@ -316,3 +316,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: I chose the statuses, the allowed moves (one step forward; cancel only while placed or accepted) and that delivery owns out_for_delivery/delivered. AI wrote the code and tests test-first. Reviews led to one name for the lock and a typed table; a review also found two existing checkout risks (undo deleting an accepted order, reused ids), left for the reliability work.
 - Validation: Ran `python -m pytest -v` (259 passed; data/ unchanged). Allowed preparing → cancelled on purpose and confirmed the tests fail, then restored it.
 - PR: #56
+
+---
+
+## Entry 26 — Order Lifecycle Endpoints
+
+- Student(s): Amro
+- Artifact: app/models/order_requests.py, app/routes/orders.py, app/services/order_service.py, app/services/exceptions.py, app/repositories/order_repository.py, README.md, docs/requirements.md, tests/test_order_service.py, tests/test_order_routes.py, tests/test_order_repository.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: PATCH /orders/{id}/status for the restaurant's owner or an admin, POST /orders/{id}/cancel for the customer or an admin, and GET /restaurants/{id}/orders so staff can find the orders they manage. Status changes go through OrderService.change_status.
+- Influence: I decided that the PATCH only accepts accepted/preparing/ready/cancelled so out_for_delivery and delivered stay with the delivery flow (driver assigned first), that cancel is only for the customer or an admin, and to add the restaurant order list after a review showed owners could not find their orders. AI wrote the code and tests test-first and reused ensure_owner_access and get_order for the access checks. Reviews trimmed duplicate tests and made the 403 message neutral; a security review found nothing.
+- Validation: Ran `python -m pytest -v` (299 passed; data/ unchanged). Removed each access check on purpose (ownership on PATCH, own-order on cancel, ownership on the list) and confirmed tests fail each time, then restored.
+- PR: #58
