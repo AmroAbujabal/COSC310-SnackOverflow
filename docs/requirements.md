@@ -38,6 +38,7 @@ Acceptance criteria and measures of success live in each story's issue, so there
 | BR6 | The backend is authoritative. | The system shall validate every rule in the service/Pydantic layer, never only in the frontend. | API-level tests |
 | BR7 | Stored data stays valid. | The system shall not store a menu item that references a restaurant that does not exist. | Data-consistency test over committed data |
 | BR8 | Automated tests must not change committed data. | Tests shall use `tmp_path` and `dependency_overrides[get_settings]`. | Test fixtures (`tests/conftest.py`) |
+| BR9 | An order moves through a fixed lifecycle: placed → accepted → preparing → ready → out_for_delivery → delivered. It can be cancelled only while placed or accepted. Delivered and cancelled are final. | The system shall change an order's status only through `OrderService.change_status`, which checks the move against `ALLOWED_TRANSITIONS` and rejects any other move with 409 without saving. | `tests/test_order_transitions.py` |
 
 ### Quality requirements
 
@@ -74,3 +75,5 @@ Status: **Finished** (merged to `main`), **In Progress** (open PR), **Not Starte
 | BR8 | FR12 | Configurable data location | — | — | `get_settings()` | Must | `test_config.py::test_default_data_dir_is_repo_data_folder`, `::test_data_dir_can_be_overridden_with_env_var` | Amro | Finished | M0. |
 | BR6 | FR13 | Stored records are validated on load | — | — | `list_all()` builds `Restaurant` models | Must | `test_restaurant_repository.py::test_list_all_rejects_a_record_with_a_missing_field` | Amro | Finished | M0. |
 | — | FR14 | CI runs the test suite on every PR | — | — | GitHub Actions (`.github/workflows/ci.yml`) | Must | CI job `tests` | Manveer | Finished | PR #24. |
+| BR9 | FR15 | Order status set | — | — | `Order.status: OrderStatus`, `ORDER_STATUSES` | Must | `test_order_models.py::test_every_lifecycle_status_is_accepted`, `::test_unknown_status_is_rejected`, `::test_old_placed_record_still_loads` | Amro | In Progress | M3. Plain lowercase strings, stored as-is in `orders.json`. |
+| BR9 | FR16 | Central order status transitions | — | — (endpoints come in a later PR) | `OrderService.change_status()` → `check_transition()` → `OrderRepository.save()` | Must | `test_order_transitions.py::test_valid_transition_passes`, `::test_invalid_transition_raises_a_business_rule_error`, `::test_change_status_saves_a_valid_move`, `::test_change_status_rejects_an_invalid_move_and_saves_nothing`, `::test_change_status_checks_the_stored_status_not_a_stale_copy`, `test_order_repository.py::test_save_replaces_only_that_order_and_persists` | Amro | In Progress | M3. Delivery calls `change_status` for out_for_delivery/delivered. |
