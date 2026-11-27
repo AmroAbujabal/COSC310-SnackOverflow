@@ -51,7 +51,10 @@ class OrderRepository:
             return new_order
 
     def save(self, order: Order) -> None:
-        """Replace the stored order that has the same id."""
+        """Replace the stored order that has the same id.
+
+        Status changes must go through OrderService.change_status, which checks the transition.
+        """
         with order_lock:
             self._save([order if existing.id == order.id else existing for existing in self.list_all()])
 
