@@ -52,7 +52,7 @@ class OrderForbiddenError(ForbiddenError):
     """The order belongs to another customer and the caller is not an admin."""
 
     def __init__(self, order_id: int):
-        super().__init__(f"Order {order_id} belongs to another customer")
+        super().__init__(f"You do not have access to order {order_id}")
 
 class InvalidOrderTransitionError(BusinessRuleError):
     """The order's current status does not allow the requested next status."""

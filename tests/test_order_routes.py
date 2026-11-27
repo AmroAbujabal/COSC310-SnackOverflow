@@ -51,7 +51,7 @@ def test_someone_elses_order_is_403(orders_client):
     log_in_as(1)
     response = orders_client.get("/orders/2")
     assert response.status_code == 403
-    assert response.json() == {"detail": "Order 2 belongs to another customer"}
+    assert response.json() == {"detail": "You do not have access to order 2"}
 
 
 def test_unknown_order_is_404(orders_client):
