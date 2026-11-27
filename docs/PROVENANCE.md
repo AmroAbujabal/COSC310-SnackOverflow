@@ -303,3 +303,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: The AI assistant implemented the frontend against the existing FastAPI contracts and documented the integration. Human review status was not provided.
 - Validation: Ran `python -m pytest -q` (224 passed). Verified in a browser using isolated seed data: account registration/sign-in/profile update/sign-out, menu browsing, add/update cart quantity, checkout, and order history/detail.
 - PR: Pending.
+
+---
+
+## Entry 25 — Order State Machine
+
+- Student(s): Amro
+- Artifact: app/models/order.py, app/repositories/order_repository.py, app/services/order_service.py, app/services/exceptions.py, docs/requirements.md, tests/test_order_models.py, tests/test_order_repository.py, tests/test_order_transitions.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Full order status set and one central transition table (ALLOWED_TRANSITIONS, check_transition, OrderService.change_status) that every status change goes through, so delivery and reports can build on it.
+- Influence: I chose the statuses, the allowed moves (one step forward; cancel only while placed or accepted) and that delivery owns out_for_delivery/delivered. AI wrote the code and tests test-first. Reviews led to one name for the lock and a typed table; a review also found two existing checkout risks (undo deleting an accepted order, reused ids), left for the reliability work.
+- Validation: Ran `python -m pytest -v` (259 passed; data/ unchanged). Allowed preparing → cancelled on purpose and confirmed the tests fail, then restored it.
+- PR: Pending
