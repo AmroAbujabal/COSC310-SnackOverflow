@@ -54,6 +54,12 @@ class OrderForbiddenError(ForbiddenError):
     def __init__(self, order_id: int):
         super().__init__(f"You cannot view order {order_id}")
 
+class InvalidOrderTransitionError(BusinessRuleError):
+    """The order's current status does not allow the requested next status."""
+
+    def __init__(self, current: str, new: str):
+        super().__init__(f"An order cannot go from {current} to {new}")
+
 class EmptyCartError(BusinessRuleError):
     """The customer's cart has no items."""
 

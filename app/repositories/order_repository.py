@@ -1,5 +1,5 @@
 import json
-from threading import Lock
+from threading import RLock
 
 from fastapi import Depends
 
@@ -7,7 +7,8 @@ from app.core.config import Settings, get_settings
 from app.models.order import Order
 
 # Shared by every instance in the process, like CartRepository's lock. Run with one worker.
-_order_lock = Lock()
+# Reentrant so OrderService can hold it across a read-check-save while save() takes it again.
+order_lock = RLock()
 
 
 class OrderRepository:
@@ -41,7 +42,7 @@ class OrderRepository:
 
     def create(self, order: Order) -> Order:
         # Read, pick the next id and save as one step, so two checkouts can't share an id.
-        with _order_lock:
+        with order_lock:
             orders = self.list_all()
             next_id = max((existing.id for existing in orders), default=0) + 1
             new_order = order.model_copy(update={"id": next_id})
@@ -49,8 +50,16 @@ class OrderRepository:
             self._save(orders)
             return new_order
 
+    def save(self, order: Order) -> None:
+        """Replace the stored order that has the same id.
+
+        Status changes must go through OrderService.change_status, which checks the transition.
+        """
+        with order_lock:
+            self._save([order if existing.id == order.id else existing for existing in self.list_all()])
+
     def delete(self, order_id: int) -> None:
-        with _order_lock:
+        with order_lock:
             self._save([order for order in self.list_all() if order.id != order_id])
 
 

@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from app.core.config import Settings
 from app.models.order import Order, OrderLine
-from app.repositories.order_repository import OrderRepository
+from app.repositories.order_repository import OrderRepository, order_lock
 
 
 def make_order(customer_id=1):
@@ -50,3 +50,24 @@ def test_concurrent_creates_get_unique_ids_and_none_are_lost(order_repo):
 
     assert sorted(order.id for order in created) == list(range(1, 21))
     assert len(order_repo.list_all()) == 20
+
+
+def test_save_replaces_only_that_order_and_persists(order_repo, tmp_path):
+    first = order_repo.create(make_order())
+    second = order_repo.create(make_order())
+
+    order_repo.save(first.model_copy(update={"status": "accepted"}))
+
+    reloaded = OrderRepository(Settings(data_dir=tmp_path))
+    assert reloaded.get(first.id).status == "accepted"
+    assert reloaded.get(second.id) == second
+
+
+def test_order_lock_is_reentrant_and_blocks_other_writers(order_repo):
+    # OrderService holds order_lock across get + save, and save takes it again.
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        with order_lock:
+            other = pool.submit(order_repo.create, make_order())  # waits for the lock
+            mine = order_repo.create(make_order())
+            order_repo.save(mine)
+        assert (mine.id, other.result().id) == (1, 2)
