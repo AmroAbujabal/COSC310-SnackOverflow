@@ -341,4 +341,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: Store the restaurant name and the customer's delivery address on each order at checkout, so later renames, address changes or menu changes don't rewrite past orders, and document which order fields are snapshots and which reference current data.
 - Influence: I decided which fields to snapshot, to keep them optional so orders saved before M3 still load, and to test a removed restaurant because restaurants can't be deactivated yet. AI wrote the code and tests test-first. Reviews merged a duplicate test, gave the test customer its own address so a wrong-address bug can't pass, and added a README note that owners see the address.
 - Validation: Ran `python -m pytest -v` (301 passed; data/ unchanged). Made checkout store the restaurant id instead of its name, and the restaurant's address instead of the customer's; tests failed each time, then restored.
-- PR: Pending
+- PR: #60
