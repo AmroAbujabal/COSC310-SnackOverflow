@@ -8,6 +8,7 @@ from app.repositories.order_repository import OrderRepository
 from app.services.cart_service import CartService
 from app.services.exceptions import EmptyCartError
 from app.services.menu_services import MenuService
+from app.services.restaurant_services import RestaurantService
 from app.core.pricing import line_total, money, order_total
 
 logger = logging.getLogger(__name__)
@@ -20,10 +21,17 @@ class CheckoutService:
     and MenuService.get_orderable_item, which raises its own 404/409.
     """
 
-    def __init__(self, order_repo: OrderRepository, cart_service: CartService, menu_service: MenuService):
+    def __init__(
+        self,
+        order_repo: OrderRepository,
+        cart_service: CartService,
+        menu_service: MenuService,
+        restaurant_service: RestaurantService,
+    ):
         self._orders = order_repo
         self._carts = cart_service
         self._menu = menu_service
+        self._restaurants = restaurant_service
 
     def checkout(self, user: Customer) -> Order:
         # Hold the cart lock for the whole checkout: a double-click can't turn one cart into two orders,
@@ -41,10 +49,14 @@ class CheckoutService:
             raise EmptyCartError()
 
         lines = [self._order_line(cart.restaurant_id, line) for line in cart.items]
+        restaurant = self._restaurants.get_restaurant(cart.restaurant_id)
         order = Order(
             id=0,  # the repository assigns the real id
             customer_id=user.id,
             restaurant_id=cart.restaurant_id,
+            restaurant_name=restaurant.name,
+            # get_current_user reloads the customer each request, so this is today's address.
+            delivery_address=user.address,
             lines=lines,
             total=order_total([line.line_total for line in lines]),
             created_at=datetime.now(timezone.utc),

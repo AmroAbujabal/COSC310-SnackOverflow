@@ -37,6 +37,11 @@ class FakeMenuService:
         return self.items[item_id]
 
 
+class FakeRestaurantService:
+    def get_restaurant(self, restaurant_id):
+        return SimpleNamespace(id=restaurant_id, name="Pretty Pizza")
+
+
 def make_cart(lines):
     return SimpleNamespace(
         restaurant_id=1,
@@ -53,7 +58,7 @@ CUSTOMER = Customer(id=1, name="C", email="c@example.com", password_hash="h", ad
 
 def make_service(order_repo, cart, unavailable=()):
     carts = FakeCartService(cart)
-    return CheckoutService(order_repo, carts, FakeMenuService(MENU, unavailable)), carts
+    return CheckoutService(order_repo, carts, FakeMenuService(MENU, unavailable), FakeRestaurantService()), carts
 
 
 def test_checkout_saves_an_order_at_current_prices_and_clears_the_cart(order_repo):
@@ -67,6 +72,7 @@ def test_checkout_saves_an_order_at_current_prices_and_clears_the_cart(order_rep
     ]
     assert order.total == 32.28
     assert (order.customer_id, order.restaurant_id) == (1, 1)
+    assert (order.restaurant_name, order.delivery_address) == ("Pretty Pizza", "1 St")
     assert order.created_at.tzinfo is not None
     assert order_repo.get(order.id) == order
     assert carts.cleared == [1]
@@ -151,7 +157,7 @@ class SlowRealisticCart(FakeCartService):
 
 def test_double_click_checkout_places_only_one_order(order_repo):
     carts = SlowRealisticCart(make_cart([(1, 1)]))
-    service = CheckoutService(order_repo, carts, FakeMenuService(MENU))
+    service = CheckoutService(order_repo, carts, FakeMenuService(MENU), FakeRestaurantService())
 
     def attempt(_):
         try:
