@@ -100,6 +100,21 @@ Representative restaurant data is stored in `data/restaurants.json`.
 
 The data folder can be changed with the `SNACKOVERFLOW_DATA_DIR` environment variable. Tests point the app at a temporary folder so the committed data is never modified.
 
+### What an order keeps
+
+An order records the transaction as it happened at checkout. Later menu, restaurant or profile changes don't rewrite it.
+
+| Order field | Kind | Notes |
+| --- | --- | --- |
+| `lines[].name`, `lines[].unit_price`, `lines[].quantity`, `lines[].line_total`, `total` | Snapshot | Copied at checkout from the menu's current price |
+| `restaurant_name` | Snapshot | The restaurant's name at checkout |
+| `delivery_address` | Snapshot | The customer's address at checkout |
+| `created_at` | Snapshot | When the order was placed |
+| `status` | Current | Moves through the order lifecycle |
+| `customer_id`, `restaurant_id`, `lines[].item_id` | Reference | Point at current records, used for access checks and reports; the order stays readable even if those records change or disappear |
+
+Orders saved before `restaurant_name` and `delivery_address` existed load with those fields empty (`null`).
+
 ## Running tests
 
 ```bash
