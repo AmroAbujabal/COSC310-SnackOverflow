@@ -108,7 +108,7 @@ An order records the transaction as it happened at checkout. Later menu, restaur
 | --- | --- | --- |
 | `lines[].name`, `lines[].unit_price`, `lines[].quantity`, `lines[].line_total`, `total` | Snapshot | Copied at checkout from the menu's current price |
 | `restaurant_name` | Snapshot | The restaurant's name at checkout |
-| `delivery_address` | Snapshot | The customer's address at checkout |
+| `delivery_address` | Snapshot | The customer's address at checkout; the restaurant's owner sees it too, so the order can be delivered |
 | `created_at` | Snapshot | When the order was placed |
 | `status` | Current | Moves through the order lifecycle |
 | `customer_id`, `restaurant_id`, `lines[].item_id` | Reference | Point at current records, used for access checks and reports; the order stays readable even if those records change or disappear |

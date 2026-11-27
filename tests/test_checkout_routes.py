@@ -35,7 +35,7 @@ def settings(tmp_path):
                           ("customers", []), ("carts", []), ("orders", [])]:
         (tmp_path / f"{name}.json").write_text(json.dumps(records), encoding="utf-8")
     CustomerRepository(settings).create(
-        Customer(id=0, name="C", email="c@example.com", password_hash="unused", address="Here"))
+        Customer(id=0, name="C", email="c@example.com", password_hash="unused", address="1 Customer St"))
     return settings
 
 
@@ -183,23 +183,16 @@ def test_item_added_during_checkout_is_kept_for_the_next_order(settings):
 
 # Historical integrity: an order keeps what was true at checkout, whatever changes later.
 
-def test_order_keeps_the_restaurant_name_and_delivery_address(checkout_client):
-    add_to_cart(checkout_client, 1, 1)
-
-    order = checkout_client.post("/checkout").json()
-
-    assert (order["restaurant_name"], order["delivery_address"]) == ("Cafe", "Here")
-
-
 def test_address_change_keeps_old_orders_and_new_orders_use_the_new_address(checkout_client):
     add_to_cart(checkout_client, 1, 1)
     first = checkout_client.post("/checkout").json()
+    assert (first["restaurant_name"], first["delivery_address"]) == ("Cafe", "1 Customer St")
 
     assert checkout_client.patch("/customers/me", json={"address": "12 New Road"}).status_code == 200
     add_to_cart(checkout_client, 1, 1)
     second = checkout_client.post("/checkout").json()
 
-    assert checkout_client.get(f"/orders/{first['id']}").json()["delivery_address"] == "Here"
+    assert checkout_client.get(f"/orders/{first['id']}").json()["delivery_address"] == "1 Customer St"
     assert second["delivery_address"] == "12 New Road"
 
 
@@ -208,11 +201,7 @@ def test_old_order_stays_readable_after_its_item_and_restaurant_change(checkout_
     order = checkout_client.post("/checkout").json()
 
     update_item(settings, 2, active=False, price=9.99)
-    restaurants = settings.restaurants_file
-    renamed = [dict(r, name="Cafe Reborn") for r in json.loads(restaurants.read_text(encoding="utf-8"))]
-    restaurants.write_text(json.dumps(renamed), encoding="utf-8")
-    assert checkout_client.get(f"/orders/{order['id']}").json() == order
+    settings.restaurants_file.write_text("[]", encoding="utf-8")  # the restaurant is gone altogether
 
-    restaurants.write_text("[]", encoding="utf-8")  # the restaurant is gone altogether
     assert checkout_client.get(f"/orders/{order['id']}").json() == order
     assert checkout_client.get("/orders").json() == [order]
