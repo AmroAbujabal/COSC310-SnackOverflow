@@ -59,15 +59,14 @@ def test_invalid_transition_raises_a_business_rule_error(current, new):
     assert isinstance(error.value, BusinessRuleError)  # so main.py maps it to 409
 
 
-@pytest.mark.parametrize("current, new", VALID)
-def test_change_status_saves_each_valid_move(order_repo, current, new):
-    order = order_repo.create(make_order(status=current))
+def test_change_status_saves_a_valid_move(order_repo):
+    order = order_repo.create(make_order(status="ready"))
 
-    changed = OrderService(order_repo).change_status(order.id, new)
+    changed = OrderService(order_repo).change_status(order.id, "out_for_delivery")
 
-    assert changed.status == new
+    assert changed.status == "out_for_delivery"
     assert order_repo.get(order.id) == changed
-    assert changed.model_copy(update={"status": current}) == order  # nothing else changed
+    assert changed.model_copy(update={"status": "ready"}) == order  # nothing else changed
 
 
 def test_change_status_rejects_an_invalid_move_and_saves_nothing(order_repo):

@@ -10,7 +10,7 @@ from app.services.exceptions import (
 # The order lifecycle: each status and the statuses it may move to next.
 # One step forward at a time; cancelling is only possible before preparation starts;
 # delivered and cancelled are final.
-ALLOWED_TRANSITIONS: dict[str, frozenset[str]] = {
+ALLOWED_TRANSITIONS: dict[OrderStatus, frozenset[OrderStatus]] = {
     "placed": frozenset({"accepted", "cancelled"}),
     "accepted": frozenset({"preparing", "cancelled"}),
     "preparing": frozenset({"ready"}),
