@@ -6,6 +6,7 @@ from app.services.exceptions import (
     OrderForbiddenError,
     OrderNotFoundError,
 )
+from app.services.restaurant_services import RestaurantService
 
 # The order lifecycle: each status and the statuses it may move to next.
 # One step forward at a time; cancelling is only possible before preparation starts;
@@ -42,6 +43,24 @@ class OrderService:
 
     def list_my_orders(self, user: Customer) -> list[Order]:
         return self._repo.list_for_customer(user.id)
+
+    def update_status(
+        self, order_id: int, new_status: OrderStatus, user: Customer, restaurants: RestaurantService
+    ) -> Order:
+        """Staff move an order on: the owner of the order's restaurant, or an admin."""
+        order = self._repo.get(order_id)
+        if order is None:
+            raise OrderNotFoundError(order_id)
+        restaurants.ensure_owner_access(order.restaurant_id, user)
+        return self.change_status(order_id, new_status)
+
+    def cancel(self, order_id: int, user: Customer) -> Order:
+        """The customer who placed the order, or an admin, cancels it.
+
+        ALLOWED_TRANSITIONS only allows this while the order is placed or accepted.
+        """
+        self.get_order(order_id, user)  # 404 / 403
+        return self.change_status(order_id, "cancelled")
 
     def change_status(self, order_id: int, new_status: OrderStatus) -> Order:
         """Move an order to `new_status` and save it. Every order status change goes through here.
