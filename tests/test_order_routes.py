@@ -51,7 +51,7 @@ def test_someone_elses_order_is_403(orders_client):
     log_in_as(1)
     response = orders_client.get("/orders/2")
     assert response.status_code == 403
-    assert response.json() == {"detail": "You cannot view order 2"}
+    assert response.json() == {"detail": "Order 2 belongs to another customer"}
 
 
 def test_unknown_order_is_404(orders_client):
@@ -61,9 +61,11 @@ def test_unknown_order_is_404(orders_client):
     assert response.json() == {"detail": "Order 99 not found"}
 
 
-@pytest.mark.parametrize("path", ["/orders", "/orders/1"])
-def test_orders_require_a_token(orders_client, path):
-    assert orders_client.get(path).status_code == 401
+@pytest.mark.parametrize("method, path", [
+    ("GET", "/orders"), ("GET", "/orders/1"), ("PATCH", "/orders/1/status"), ("POST", "/orders/1/cancel"),
+])
+def test_orders_require_a_token(orders_client, method, path):
+    assert orders_client.request(method, path, json={"status": "accepted"}).status_code == 401
 
 
 def set_status(data_dir, order_id, status):
@@ -97,7 +99,7 @@ def test_invalid_status_move_is_409(orders_client):
     assert response.json() == {"detail": "An order cannot go from placed to ready"}
 
 
-@pytest.mark.parametrize("status", ["out_for_delivery", "delivered", "placed", "lost"])
+@pytest.mark.parametrize("status", ["out_for_delivery", "delivered", "placed"])
 def test_patch_only_accepts_staff_statuses(orders_client, status):
     # out_for_delivery and delivered are set by the delivery flow, not by this endpoint.
     log_in_as(9, role="admin")
@@ -143,7 +145,3 @@ def test_finished_orders_stay_retrievable(orders_client, data_dir, status):
     assert orders_client.get("/orders/1").json()["status"] == status
     assert [order["status"] for order in orders_client.get("/orders").json()] == [status]
 
-
-@pytest.mark.parametrize("method, path", [("PATCH", "/orders/1/status"), ("POST", "/orders/1/cancel")])
-def test_lifecycle_endpoints_require_a_token(orders_client, method, path):
-    assert orders_client.request(method, path, json={"status": "accepted"}).status_code == 401

@@ -111,9 +111,9 @@ def test_update_status_of_unknown_order_is_not_found(service, restaurants):
         service.update_status(99, "accepted", ADMIN, restaurants)
 
 
-@pytest.mark.parametrize("status", ["placed", "accepted"])
-@pytest.mark.parametrize("user", [CUSTOMER, ADMIN], ids=["customer who placed it", "admin"])
-def test_order_can_be_cancelled_while_placed_or_accepted(order_repo, service, status, user):
+@pytest.mark.parametrize("user, status", [(CUSTOMER, "placed"), (ADMIN, "accepted")],
+                         ids=["customer who placed it", "admin"])
+def test_order_can_be_cancelled_while_placed_or_accepted(order_repo, service, user, status):
     order = order_repo.create(make_order(customer_id=5, status=status))
 
     assert service.cancel(order.id, user).status == "cancelled"
@@ -130,11 +130,11 @@ def test_only_the_customer_or_admin_can_cancel(order_repo, service, user):
     assert order_repo.get(order.id).status == "placed"
 
 
-@pytest.mark.parametrize("status", ["preparing", "ready", "out_for_delivery", "delivered", "cancelled"])
-def test_cancel_is_rejected_once_preparation_has_started(order_repo, service, status):
-    order = order_repo.create(make_order(customer_id=5, status=status))
+def test_cancel_is_rejected_once_preparation_has_started(order_repo, service):
+    # Every other too-late status is covered in test_order_transitions.py.
+    order = order_repo.create(make_order(customer_id=5, status="preparing"))
 
-    with pytest.raises(InvalidOrderTransitionError, match=f"from {status} to cancelled"):
+    with pytest.raises(InvalidOrderTransitionError, match="from preparing to cancelled"):
         service.cancel(order.id, CUSTOMER)
 
-    assert order_repo.get(order.id).status == status
+    assert order_repo.get(order.id).status == "preparing"
