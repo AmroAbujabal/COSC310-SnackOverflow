@@ -63,6 +63,7 @@ def test_unknown_order_is_404(orders_client):
 
 @pytest.mark.parametrize("method, path", [
     ("GET", "/orders"), ("GET", "/orders/1"), ("PATCH", "/orders/1/status"), ("POST", "/orders/1/cancel"),
+    ("GET", "/restaurants/1/orders"),
 ])
 def test_orders_require_a_token(orders_client, method, path):
     assert orders_client.request(method, path, json={"status": "accepted"}).status_code == 401
@@ -145,3 +146,21 @@ def test_finished_orders_stay_retrievable(orders_client, data_dir, status):
     assert orders_client.get("/orders/1").json()["status"] == status
     assert [order["status"] for order in orders_client.get("/orders").json()] == [status]
 
+
+
+def test_owner_lists_their_restaurants_orders(orders_client):
+    log_in_as(1, role="owner")
+    response = orders_client.get("/restaurants/1/orders")
+    assert response.status_code == 200
+    assert [order["id"] for order in response.json()] == [1, 2]
+
+
+@pytest.mark.parametrize("user_id, role", [(3, "owner"), (2, "customer")], ids=["other owner", "customer"])
+def test_others_cannot_list_a_restaurants_orders(orders_client, user_id, role):
+    log_in_as(user_id, role=role)
+    assert orders_client.get("/restaurants/1/orders").status_code == 403
+
+
+def test_listing_orders_of_unknown_restaurant_is_404(orders_client):
+    log_in_as(9, role="admin")
+    assert orders_client.get("/restaurants/99/orders").status_code == 404

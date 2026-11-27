@@ -44,6 +44,13 @@ class OrderService:
     def list_my_orders(self, user: Customer) -> list[Order]:
         return self._repo.list_for_customer(user.id)
 
+    def list_restaurant_orders(
+        self, restaurant_id: int, user: Customer, restaurants: RestaurantService
+    ) -> list[Order]:
+        """Every order placed at a restaurant, for its owner or an admin."""
+        restaurants.ensure_owner_access(restaurant_id, user)
+        return self._repo.list_for_restaurant(restaurant_id)
+
     def update_status(
         self, order_id: int, new_status: OrderStatus, user: Customer, restaurants: RestaurantService
     ) -> Order:

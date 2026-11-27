@@ -71,3 +71,11 @@ def test_order_lock_is_reentrant_and_blocks_other_writers(order_repo):
             mine = order_repo.create(make_order())
             order_repo.save(mine)
         assert (mine.id, other.result().id) == (1, 2)
+
+
+def test_list_for_restaurant_returns_only_its_orders(order_repo):
+    order_repo.create(make_order())
+    order_repo.create(make_order().model_copy(update={"restaurant_id": 2}))
+    order_repo.create(make_order())
+
+    assert [order.id for order in order_repo.list_for_restaurant(1)] == [1, 3]

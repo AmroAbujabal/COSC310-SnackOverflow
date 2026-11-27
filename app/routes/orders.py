@@ -51,6 +51,26 @@ def get_order(
     return OrderService(repo).get_order(order_id, user)
 
 
+@router.get(
+    "/restaurants/{restaurant_id}/orders",
+    response_model=list[Order],
+    summary="List a restaurant's orders",
+    description="Every order placed at the restaurant, in any status. For the restaurant's owner or an admin.",
+    responses={
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+    },
+)
+def restaurant_orders(
+    restaurant_id: int = Path(..., description="The restaurant's id"),
+    user: Customer = Depends(require_role("owner", "admin")),
+    orders: OrderRepository = Depends(get_order_repository),
+    restaurants: RestaurantRepository = Depends(get_restaurant_repository),
+):
+    return OrderService(orders).list_restaurant_orders(restaurant_id, user, RestaurantService(restaurants))
+
+
 @router.patch(
     "/orders/{order_id}/status",
     response_model=Order,

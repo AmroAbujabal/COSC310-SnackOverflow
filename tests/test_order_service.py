@@ -11,6 +11,7 @@ from app.services.exceptions import (
     InvalidOrderTransitionError,
     OrderForbiddenError,
     OrderNotFoundError,
+    RestaurantNotFoundError,
 )
 from app.services.order_service import OrderService
 from app.services.restaurant_services import RestaurantService
@@ -138,3 +139,26 @@ def test_cancel_is_rejected_once_preparation_has_started(order_repo, service):
         service.cancel(order.id, CUSTOMER)
 
     assert order_repo.get(order.id).status == "preparing"
+
+
+@pytest.mark.parametrize("user", [RESTAURANT_OWNER, ADMIN], ids=["restaurant owner", "admin"])
+def test_owner_or_admin_lists_a_restaurants_orders(order_repo, service, restaurants, user):
+    order_repo.create(make_order(customer_id=5))
+    order_repo.create(make_order(customer_id=6, status="delivered"))
+
+    orders = service.list_restaurant_orders(1, user, restaurants)
+
+    assert [order.customer_id for order in orders] == [5, 6]
+
+
+@pytest.mark.parametrize("user", [OTHER_OWNER, CUSTOMER], ids=["other owner", "customer"])
+def test_others_cannot_list_a_restaurants_orders(order_repo, service, restaurants, user):
+    order_repo.create(make_order(customer_id=5))
+
+    with pytest.raises(ForbiddenError):
+        service.list_restaurant_orders(1, user, restaurants)
+
+
+def test_listing_orders_of_unknown_restaurant_is_not_found(service, restaurants):
+    with pytest.raises(RestaurantNotFoundError):
+        service.list_restaurant_orders(99, ADMIN, restaurants)
