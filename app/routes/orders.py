@@ -123,7 +123,7 @@ def get_checkout_service(
     menus: MenuRepository = Depends(get_menu_repository),
     restaurants: RestaurantRepository = Depends(get_restaurant_repository),
 ) -> CheckoutService:
-    return CheckoutService(orders, carts, MenuService(menus, restaurants))
+    return CheckoutService(orders, carts, MenuService(menus, restaurants), RestaurantService(restaurants))
 
 
 @router.post(

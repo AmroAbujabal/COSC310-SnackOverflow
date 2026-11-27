@@ -33,6 +33,10 @@ class Order(BaseModel):
     id: int
     customer_id: int
     restaurant_id: int
+    # Snapshots taken at checkout, so later renames or address changes don't rewrite the order.
+    # None only on orders saved before M3 added them.
+    restaurant_name: str | None = None
+    delivery_address: str | None = None
     lines: list[OrderLine] = Field(min_length=1)
     total: float
     status: OrderStatus = "placed"

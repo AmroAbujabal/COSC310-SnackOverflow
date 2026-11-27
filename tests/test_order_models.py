@@ -31,7 +31,9 @@ def test_old_placed_record_still_loads():
     # Shape of a record saved before M3 added the other statuses.
     record = {"id": 1, "customer_id": 1, "restaurant_id": 1, "lines": [make_line().model_dump()],
               "total": 31.98, "status": "placed", "created_at": "2026-11-18T12:00:00Z"}
-    assert Order(**record).status == "placed"
+    order = Order(**record)
+    assert order.status == "placed"
+    assert (order.restaurant_name, order.delivery_address) == (None, None)  # added in M3
 
 
 @pytest.mark.parametrize("status", ORDER_STATUSES)

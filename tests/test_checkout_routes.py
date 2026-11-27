@@ -18,6 +18,7 @@ from app.repositories.restaurant_repository import RestaurantRepository
 from app.services.cart_service import CartService
 from app.services.checkout_service import CheckoutService
 from app.services.menu_services import MenuService
+from app.services.restaurant_services import RestaurantService
 
 # Real services and JSON files end to end: only the data folder is temporary.
 
@@ -34,7 +35,7 @@ def settings(tmp_path):
                           ("customers", []), ("carts", []), ("orders", [])]:
         (tmp_path / f"{name}.json").write_text(json.dumps(records), encoding="utf-8")
     CustomerRepository(settings).create(
-        Customer(id=0, name="C", email="c@example.com", password_hash="unused", address="Here"))
+        Customer(id=0, name="C", email="c@example.com", password_hash="unused", address="1 Customer St"))
     return settings
 
 
@@ -154,7 +155,8 @@ def test_item_added_during_checkout_is_kept_for_the_next_order(settings):
     cart_menu = menu(SignallingMenuService)
     carts = CartService(CartRepository(settings), CustomerRepository(settings), cart_menu)
     paused_menu = menu(PausingMenuService)
-    checkout = CheckoutService(OrderRepository(settings), carts, paused_menu)
+    checkout = CheckoutService(OrderRepository(settings), carts, paused_menu,
+                               RestaurantService(RestaurantRepository(settings)))
     customer = CustomerRepository(settings).get(1)
     carts.add_item(1, CartAdd(restaurant_id=1, item_id=1, quantity=1))
     cart_menu.checked.clear()
@@ -177,3 +179,29 @@ def test_item_added_during_checkout_is_kept_for_the_next_order(settings):
     # The order has what was in the cart when checkout started; the late item waits in the cart.
     assert [line.item_id for line in placed[0].lines] == [1]
     assert [line.item_id for line in carts.get_or_create_active(1).items] == [2]
+
+
+# Historical integrity: an order keeps what was true at checkout, whatever changes later.
+
+def test_address_change_keeps_old_orders_and_new_orders_use_the_new_address(checkout_client):
+    add_to_cart(checkout_client, 1, 1)
+    first = checkout_client.post("/checkout").json()
+    assert (first["restaurant_name"], first["delivery_address"]) == ("Cafe", "1 Customer St")
+
+    assert checkout_client.patch("/customers/me", json={"address": "12 New Road"}).status_code == 200
+    add_to_cart(checkout_client, 1, 1)
+    second = checkout_client.post("/checkout").json()
+
+    assert checkout_client.get(f"/orders/{first['id']}").json()["delivery_address"] == "1 Customer St"
+    assert second["delivery_address"] == "12 New Road"
+
+
+def test_old_order_stays_readable_after_its_item_and_restaurant_change(checkout_client, settings):
+    add_to_cart(checkout_client, 2, 2)
+    order = checkout_client.post("/checkout").json()
+
+    update_item(settings, 2, active=False, price=9.99)
+    settings.restaurants_file.write_text("[]", encoding="utf-8")  # the restaurant is gone altogether
+
+    assert checkout_client.get(f"/orders/{order['id']}").json() == order
+    assert checkout_client.get("/orders").json() == [order]

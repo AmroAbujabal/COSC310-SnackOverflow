@@ -329,3 +329,16 @@ Each team member adds their own entries in the same PR as the work they describe
 - Influence: I decided that the PATCH only accepts accepted/preparing/ready/cancelled so out_for_delivery and delivered stay with the delivery flow (driver assigned first), that cancel is only for the customer or an admin, and to add the restaurant order list after a review showed owners could not find their orders. AI wrote the code and tests test-first and reused ensure_owner_access and get_order for the access checks. Reviews trimmed duplicate tests and made the 403 message neutral; a security review found nothing.
 - Validation: Ran `python -m pytest -v` (299 passed; data/ unchanged). Removed each access check on purpose (ownership on PATCH, own-order on cancel, ownership on the list) and confirmed tests fail each time, then restored.
 - PR: #58
+
+---
+
+## Entry 27 — Order Snapshots (Historical Integrity)
+
+- Student(s): Amro
+- Artifact: app/models/order.py, app/services/checkout_service.py, app/routes/orders.py, README.md, docs/requirements.md, tests/test_checkout_routes.py, tests/test_checkout_service.py
+- Label: AI-GENERATED
+- AI tool: Claude
+- Purpose: Store the restaurant name and the customer's delivery address on each order at checkout, so later renames, address changes or menu changes don't rewrite past orders, and document which order fields are snapshots and which reference current data.
+- Influence: I decided which fields to snapshot, to keep them optional so orders saved before M3 still load, and to test a removed restaurant because restaurants can't be deactivated yet. AI wrote the code and tests test-first. Reviews merged a duplicate test, gave the test customer its own address so a wrong-address bug can't pass, and added a README note that owners see the address.
+- Validation: Ran `python -m pytest -v` (301 passed; data/ unchanged). Made checkout store the restaurant id instead of its name, and the restaurant's address instead of the customer's; tests failed each time, then restored.
+- PR: #60
