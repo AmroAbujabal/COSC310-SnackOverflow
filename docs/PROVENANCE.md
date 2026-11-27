@@ -315,4 +315,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: Full order status set and one central transition table (ALLOWED_TRANSITIONS, check_transition, OrderService.change_status) that every status change goes through, so delivery and reports can build on it.
 - Influence: I chose the statuses, the allowed moves (one step forward; cancel only while placed or accepted) and that delivery owns out_for_delivery/delivered. AI wrote the code and tests test-first. Reviews led to one name for the lock and a typed table; a review also found two existing checkout risks (undo deleting an accepted order, reused ids), left for the reliability work.
 - Validation: Ran `python -m pytest -v` (259 passed; data/ unchanged). Allowed preparing → cancelled on purpose and confirmed the tests fail, then restored it.
-- PR: Pending
+- PR: #56
