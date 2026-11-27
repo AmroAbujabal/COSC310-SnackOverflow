@@ -1,9 +1,17 @@
 from datetime import datetime
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, Field, model_validator
 
 from app.core.pricing import line_total, order_total
+
+
+# Plain lowercase strings: they are stored as-is in orders.json and reports group by them.
+# Which moves between them are allowed lives in app/services/order_service.py (ALLOWED_TRANSITIONS).
+OrderStatus = Literal[
+    "placed", "accepted", "preparing", "ready", "out_for_delivery", "delivered", "cancelled"
+]
+ORDER_STATUSES: tuple[str, ...] = get_args(OrderStatus)
 
 
 class OrderLine(BaseModel):
@@ -27,7 +35,7 @@ class Order(BaseModel):
     restaurant_id: int
     lines: list[OrderLine] = Field(min_length=1)
     total: float
-    status: Literal["placed"] = "placed"
+    status: OrderStatus = "placed"
     created_at: datetime
 
     @model_validator(mode="after")
