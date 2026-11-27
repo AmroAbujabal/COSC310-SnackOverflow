@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, Path, status
 
-from app.dependencies.auth import get_current_user
+from app.dependencies.auth import get_current_user, require_role
 from app.models.customer import Customer
 from app.models.error import ErrorResponse
 from app.models.order import Order
+from app.models.order_requests import OrderStatusUpdate
 from app.repositories.menu_repository import MenuRepository, get_menu_repository
 from app.repositories.order_repository import OrderRepository, get_order_repository
 from app.repositories.restaurant_repository import RestaurantRepository, get_restaurant_repository
@@ -12,6 +13,7 @@ from app.services.cart_service import CartService
 from app.services.checkout_service import CheckoutService
 from app.services.menu_services import MenuService
 from app.services.order_service import OrderService
+from app.services.restaurant_services import RestaurantService
 
 router = APIRouter()
 
@@ -47,6 +49,52 @@ def get_order(
     repo: OrderRepository = Depends(get_order_repository),
 ):
     return OrderService(repo).get_order(order_id, user)
+
+
+@router.patch(
+    "/orders/{order_id}/status",
+    response_model=Order,
+    summary="Move an order to its next status",
+    description=(
+        "For the owner of the order's restaurant, or an admin. Accepts accepted, preparing, ready "
+        "or cancelled; out_for_delivery and delivered are set by the delivery flow. "
+        "A move the order lifecycle does not allow is a 409."
+    ),
+    responses={
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        409: {"model": ErrorResponse, "description": "Not an allowed next status"},
+    },
+)
+def update_order_status(
+    body: OrderStatusUpdate,
+    order_id: int = Path(..., description="The order's id"),
+    user: Customer = Depends(require_role("owner", "admin")),
+    orders: OrderRepository = Depends(get_order_repository),
+    restaurants: RestaurantRepository = Depends(get_restaurant_repository),
+):
+    return OrderService(orders).update_status(order_id, body.status, user, RestaurantService(restaurants))
+
+
+@router.post(
+    "/orders/{order_id}/cancel",
+    response_model=Order,
+    summary="Cancel an order",
+    description="For the customer who placed it, or an admin, while the order is placed or accepted.",
+    responses={
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        409: {"model": ErrorResponse, "description": "Preparation has already started"},
+    },
+)
+def cancel_order(
+    order_id: int = Path(..., description="The order's id"),
+    user: Customer = Depends(get_current_user),
+    repo: OrderRepository = Depends(get_order_repository),
+):
+    return OrderService(repo).cancel(order_id, user)
 
 
 def get_checkout_service(
