@@ -328,4 +328,4 @@ Each team member adds their own entries in the same PR as the work they describe
 - Purpose: PATCH /orders/{id}/status for the restaurant's owner or an admin, POST /orders/{id}/cancel for the customer or an admin, and GET /restaurants/{id}/orders so staff can find the orders they manage. Status changes go through OrderService.change_status.
 - Influence: I decided that the PATCH only accepts accepted/preparing/ready/cancelled so out_for_delivery and delivered stay with the delivery flow (driver assigned first), that cancel is only for the customer or an admin, and to add the restaurant order list after a review showed owners could not find their orders. AI wrote the code and tests test-first and reused ensure_owner_access and get_order for the access checks. Reviews trimmed duplicate tests and made the 403 message neutral; a security review found nothing.
 - Validation: Ran `python -m pytest -v` (299 passed; data/ unchanged). Removed each access check on purpose (ownership on PATCH, own-order on cancel, ownership on the list) and confirmed tests fail each time, then restored.
-- PR: Pending
+- PR: #58
