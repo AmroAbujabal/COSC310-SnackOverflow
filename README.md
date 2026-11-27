@@ -69,6 +69,8 @@ The restaurant browsing page is at http://127.0.0.1:8000/ and the management fro
 | GET | `/orders` | The logged-in customer's orders; `401` without a token |
 | GET | `/orders/{order_id}` | One order; only its customer or an admin (`403` otherwise), `404` if unknown |
 | POST | `/checkout` | Turn your cart into an order at current prices, then empty the cart; `409` if the cart is empty or an item is unavailable (nothing saved) |
+| PATCH | `/orders/{order_id}/status` | Owner of the order's restaurant or admin moves it on: body `{"status": "accepted" \| "preparing" \| "ready" \| "cancelled"}`; `409` if the lifecycle doesn't allow the move, `422` for any other status (out_for_delivery/delivered come from delivery) |
+| POST | `/orders/{order_id}/cancel` | The customer who placed it, or an admin, cancels it while it is `placed` or `accepted`; `409` once preparation has started |
 
 The customer front end supports registration and sign-in, profile management, browsing menus, adding and updating cart items, checkout, and viewing order history and details. The management front end can create and edit restaurants and menu items using these API endpoints.
 
